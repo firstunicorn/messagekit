@@ -1,6 +1,6 @@
 # Eventing
 
-Package-first universal event infrastructure for GridFlow microservices.
+Package-first universal event infrastructure for microservices.
 
 ## Scope
 
@@ -15,9 +15,8 @@ Package-first universal event infrastructure for GridFlow microservices.
 - Python import package: `eventing`
 
 Services should consume the published package rather than a source checkout.
-The package stays out of the synchronous request path; Kafka remains shared
-infrastructure and each participating service uses local producer/consumer
-clients.
+Kafka remains sharedinfrastructure and each participating service uses 
+local producer/consumer clients.
 
 ## Local development
 
