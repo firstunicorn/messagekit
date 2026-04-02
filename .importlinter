@@ -1,0 +1,12 @@
+[importlinter]
+root_package = eventing
+
+[importlinter:contract:layers]
+name = Clean Architecture layer independence
+type = layers
+layers =
+    eventing.presentation
+    eventing.infrastructure
+    eventing.application
+    eventing.domain
+    eventing.core

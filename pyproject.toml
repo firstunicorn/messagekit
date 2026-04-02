@@ -1,0 +1,294 @@
+[tool.poetry]
+name = "python-eventing"
+version = "0.1.0"
+description = "Universal event infrastructure with transactional outbox and Kafka integration"
+authors = ["firstunicorn"]
+readme = "README.md"
+homepage = "https://github.com/firstunicorn/python-eventing"
+repository = "https://github.com/firstunicorn/python-eventing"
+packages = [{include = "eventing", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.135.2"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+pydantic = "^2.9.2"
+pydantic-settings = "^2.6.1"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+asyncpg = "^0.30.0"
+alembic = "^1.14.0"
+faststream = {extras = ["kafka"], version = "^0.6.7"}
+tenacity = "^9.0.0"
+
+# python-web-toolkit packages: Use PyPI versions (^0.1.0), NOT local paths.
+# Local path dependencies cause issues:
+# - Breaks CI/CD (paths don't exist on runners)
+# - Prevents independent versioning of packages
+# - Creates circular dev dependency hell in monorepo
+#
+# If you need local development: `poetry install --with dev` then `poetry source add` for local overrides
+# Or use: poetry source add --priority primary local-file ../python-web-toolkit/python-domain-events
+python-domain-events = "^0.1.0"
+python-outbox-core = "^0.1.0"
+python-cqrs-core = "^0.1.0"
+python-cqrs-dispatcher = "^0.1.1"
+gridflow-python-mediator = "^0.1.0"
+python-dto-mappers = "^0.1.0"
+python-app-exceptions = "^0.1.0"
+python-infrastructure-exceptions = "^0.1.0"
+python-input-validation = "^0.1.0"
+python-structlog-config = "^0.1.0"
+sqlalchemy-async-repositories = "^0.1.0"
+sqlalchemy-async-session-factory = "^0.1.0"
+fastapi-config-patterns = "^0.1.0"
+fastapi-middleware-toolkit = "^0.1.0"
+pydantic-response-models = "^0.1.0"
+postgres-data-sanitizers = "^0.1.0"
+python-technical-primitives = "^0.1.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.4"
+# The following tools are maintained alongside Ruff because Ruff's implementations are inferior/missing:
+isort = "^5.13.2"  # Ruff's isort struggles with inline comments/aliases
+pydocstyle = "^6.3.0"  # Ruff checks AST only; lacks deep semantic verification of signatures vs docstrings
+pylint = "^3.3.2"  # Kept for deep architectural checks (R0901) and strict limits (C0302). Ruff rejected C0302 and lacks multi-file semantic analysis.
+bandit = "^1.8.0"  # Ruff's flake8-bandit misses newer rules (B614/B615) and advanced AST edge cases.
+radon = "^6.0.1"  # Maintained for Maintainability Index (MI) which Ruff lacks.
+vulture = "^2.13"  # Maintained for project-wide dead code analysis (Ruff only checks local).
+darglint = "^1.8.1"  # Maintained for deep semantic verification of signatures vs docstrings.
+flake8-cognitive-complexity = "^0.1.0"  # Ruff explicitly does NOT support cognitive complexity (CCR001).
+# Standard tools:
+mypy = "^1.13.0"
+import-linter = "^2.2.0"
+flake8 = "^7.1.1"
+flake8-fastapi = "^0.7.0"
+flake8-pydantic = "^0.4.0"
+flake8-pydantic-fields = "^0.1.0"
+flake8-empty-init-modules = "^1.0.1"
+safety = "^3.2.11"
+interrogate = "^1.7.0"
+deptry = "^0.20.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+pytest-asyncio = "^0.24.0"
+pytest-cov = "^6.0.0"
+pytest-timeout = "^2.3.1"
+hypothesis = "^6.122.3"
+testcontainers = {extras = ["kafka", "postgres"], version = "^4.9.0"}
+pytest-httpx = "^0.35.0"
+mutmut = "^3.2.0"
+aiosqlite = "^0.21.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^8.1.3"
+furo = "^2024.8.6"
+sphinx-autoapi = "^3.4.0"
+sphinx-autodoc-typehints = "^2.5.0"
+myst-parser = "^4.0.0"
+sphinx-copybutton = "^0.5.2"
+sphinx-llms-txt = "^0.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".eggs", ".git", ".mypy_cache", ".tox", ".venv", "build", "dist", "alembic/versions", "__pycache__"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "N",      # pep8-naming
+    "UP",     # pyupgrade (modernize syntax)
+    "B",      # flake8-bugbear
+    "S",      # flake8-bandit (fast security rules)
+    "C4",     # flake8-comprehensions
+    "C901",   # mccabe cyclomatic complexity
+    "DTZ",    # flake8-datetimez (critical for event timestamps)
+    "T10",    # flake8-debugger
+    "EM",     # flake8-errmsg
+    "ISC",    # flake8-implicit-str-concat
+    "ICN",    # flake8-import-conventions
+    "PIE",    # flake8-pie
+    "PT",     # flake8-pytest-style
+    "Q",      # flake8-quotes
+    "RSE",    # flake8-raise
+    "RET",    # flake8-return
+    "SIM",    # flake8-simplify
+    "ARG",    # flake8-unused-arguments
+    "PTH",    # flake8-use-pathlib
+    "PL",     # pylint (full suite: PLR, PLC, PLE, PLW)
+    "RUF",    # ruff-specific rules
+]
+ignore = [
+    "E501",    # Line too long (handled by ruff formatter)
+    "B008",    # Do not perform function calls in argument defaults (FastAPI Depends pattern)
+    # The following rules are delegated to Pylint for deeper/better analysis:
+    "PLR0913", # too-many-arguments (Ruff cannot ignore args via regex like Pylint can)
+    "PLR0915", # too-many-statements (Ruff unconditionally counts 'pass' and docstrings)
+    "PLR1702", # too-many-nested-blocks (Ruff highlights the entire function body causing UI noise)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Unused imports (re-exports)
+"tests/**/*.py" = [
+    "ARG",     # Unused arguments (fixtures)
+    "DTZ001",  # Naive datetime construction is intentional in validation tests.
+    "PLR2004", # Magic values (test data)
+    "S101",    # Assertions are the canonical pytest style.
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.pylint.main]
+load-plugins = ["pylint.extensions.mccabe"]
+max-module-lines = 100
+
+[tool.pylint.design]
+max-parents = 3
+
+[tool.pylint.messages_control]
+enable = [
+    "too-many-lines",              # C0302 (Not supported by Ruff)
+    "too-many-instance-attributes", # R0902 (Pylint has better type inference)
+    "too-many-public-methods",     # R0904 (Pylint has better type inference)
+    "too-many-arguments",          # R0913 (Ruff cannot ignore args via regex like Pylint can)
+    "too-many-locals",             # R0914 (Pylint is more accurate)
+    "too-many-statements",         # R0915 (Ruff blindly counts 'pass' and docstrings; Pylint is smarter)
+    "too-many-ancestors",          # R0901 (inheritance depth - Not supported by Ruff)
+    "too-many-nested-blocks",      # R1702 (Ruff highlights whole function UI noise; Pylint is precise)
+    "too-complex",                 # R1260 (Pylint's strict complexity vs Ruff's mccabe)
+]
+disable = [
+    "all"                          # Let Ruff handle everything else (formatting, basic linting, fast basic security)
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src"]
+mypy_path = ["src"]
+namespace_packages = true
+explicit_package_bases = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_any_unimported = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_decorators = false
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_no_return = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[[tool.mypy.overrides]]
+module = [
+    "faststream.*",
+    "tenacity.*",
+    "python_domain_events",
+    "python_domain_events.*",
+    "python_outbox_core",
+    "python_outbox_core.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+timeout = 300
+addopts = [
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=80",
+    "--cov-branch",
+    "--strict-markers",
+    "--tb=short",
+    "-v",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "*/alembic/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+fail_under = 80
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = false
+ignore-magic = false
+ignore-semiprivate = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-module = false
+ignore-nested-functions = false
+ignore-nested-classes = true
+ignore-setters = false
+fail-under = 90
+verbose = 2
+color = true
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv", "build", "dist"]
+skips = ["B101"]
+
+[tool.vulture]
+paths = ["src"]
+min_confidence = 80
+
+[tool.deptry]
+extend_exclude = ["docs"]
+known_first_party = ["eventing"]
+per_rule_ignores = { DEP002 = ["uvicorn", "asyncpg", "alembic"] }
+
+[tool.pydocstyle]
+convention = "google"
+add-ignore = ["D100", "D104", "D107"]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["eventing"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+line_length = 100

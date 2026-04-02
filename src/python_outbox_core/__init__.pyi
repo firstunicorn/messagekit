@@ -1,0 +1,94 @@
+from dataclasses import dataclass
+from typing import Any, Protocol
+from uuid import UUID
+
+class IOutboxEvent(Protocol):
+    event_id: UUID
+    event_type: str
+    aggregate_id: str
+
+    def to_message(self) -> dict[str, Any]:
+        ...
+
+    def get_partition_key(self) -> str:
+        ...
+
+
+class IOutboxRepository(Protocol):
+    async def add_event(self, event: IOutboxEvent) -> None:
+        ...
+
+    async def get_unpublished(self, limit: int = 100, offset: int = 0) -> list[IOutboxEvent]:
+        ...
+
+    async def mark_published(self, event_id: UUID) -> None:
+        ...
+
+    async def count_unpublished(self) -> int:
+        ...
+
+    async def mark_failed(self, event_id: UUID, error_message: str) -> None:
+        ...
+
+    async def ping(self) -> bool:
+        ...
+
+    async def oldest_unpublished_age_seconds(self) -> float:
+        ...
+
+
+class IEventPublisher(Protocol):
+    async def publish(self, message: dict[str, Any]) -> None:
+        ...
+
+
+class CloudEventsFormatter:
+    def __init__(self, source: str, data_content_type: str = "application/json") -> None:
+        ...
+
+    def format(self, event: IOutboxEvent) -> dict[str, Any]:
+        ...
+
+    def get_content_type(self) -> str:
+        ...
+
+
+@dataclass(frozen=True, slots=True)
+class OutboxConfig:
+    batch_size: int
+    poll_interval_seconds: int
+    max_retry_count: int
+    retry_backoff_multiplier: float
+
+
+class OutboxErrorHandler:
+    def handle(self, event: IOutboxEvent, error: Exception) -> None:
+        ...
+
+
+class OutboxMetrics:
+    def log_success(self, event: IOutboxEvent) -> None:
+        ...
+
+
+class OutboxPublisherBase:
+    repository: IOutboxRepository
+    publisher: IEventPublisher
+    error_handler: OutboxErrorHandler
+    metrics: OutboxMetrics
+
+    def __init__(
+        self,
+        repository: IOutboxRepository,
+        publisher: IEventPublisher,
+        *,
+        error_handler: OutboxErrorHandler | None = None,
+        metrics: OutboxMetrics | None = None,
+    ) -> None:
+        ...
+
+    async def publish_batch(self, limit: int = 100) -> int:
+        ...
+
+    async def _try_publish(self, event: Any) -> bool:
+        ...

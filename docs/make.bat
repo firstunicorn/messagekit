@@ -1,0 +1,17 @@
+@ECHO OFF
+SETLOCAL
+
+IF "%SPHINXBUILD%"=="" SET SPHINXBUILD=poetry run sphinx-build
+SET SOURCEDIR=source
+SET BUILDDIR=build
+
+IF "%1"=="" GOTO help
+
+%SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR%
+GOTO end
+
+:help
+%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR%
+
+:end
+ENDLOCAL

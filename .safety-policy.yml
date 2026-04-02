@@ -1,0 +1,8 @@
+security:
+  ignore-cvss-severity-below: 0
+  ignore-cvss-unknown-severity: false
+  ignore-vulnerabilities:
+    51457:
+      reason: "Disputed advisory; py 1.11.0 is the latest published release and is only used by interrogate."
+      expires: "2027-03-31"
+  continue-on-vulnerability-error: false

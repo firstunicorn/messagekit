@@ -1,0 +1,40 @@
+"""Helpers for wiring the in-process event dispatcher."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from eventing.core.events.base_event import BaseEvent
+from eventing.core.events.dispatch_hooks import DispatchHooks, DispatchSettings
+from eventing.core.events.event_bus import DispatchBackend, EventBus
+from python_domain_events import IDomainEventHandler, InProcessEventDispatcher
+
+
+@dataclass(frozen=True, slots=True)
+class HandlerRegistration:
+    """Bind an event class to an in-process handler instance."""
+
+    event_type: type[BaseEvent]
+    handler: IDomainEventHandler[BaseEvent]
+
+
+def build_dispatcher(registrations: list[HandlerRegistration]) -> InProcessEventDispatcher:
+    """Create a dispatcher and register all provided handlers."""
+    dispatcher = InProcessEventDispatcher()
+    for registration in registrations:
+        dispatcher.register(registration.event_type, registration.handler)
+    return dispatcher
+
+
+def build_event_bus(
+    registrations: list[HandlerRegistration],
+    *,
+    backend: DispatchBackend | None = None,
+    hooks: DispatchHooks | None = None,
+    settings: DispatchSettings | None = None,
+) -> EventBus:
+    """Create the higher-level event bus from the same registration model."""
+    event_bus = EventBus(backend=backend, hooks=hooks, settings=settings)
+    for registration in registrations:
+        event_bus.register(registration.event_type, registration.handler)
+    return event_bus
