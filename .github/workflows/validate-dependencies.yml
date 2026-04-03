@@ -16,8 +16,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Detect Poetry version from lock file
+        id: poetry-version
+        run: |
+          version="$(python - <<'PY'
+          import re
+          from pathlib import Path
+
+          first_line = Path("poetry.lock").read_text(encoding="utf-8").splitlines()[0]
+          match = re.search(r"Poetry ([0-9]+(?:\.[0-9]+)+)", first_line)
+          if not match:
+              raise SystemExit("Could not determine Poetry version from poetry.lock")
+          print(match.group(1))
+          PY
+          )"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
       - name: Install Poetry
-        run: pip install poetry==2.3.3
+        run: pip install "poetry==${{ steps.poetry-version.outputs.version }}"
 
       - name: Check pyproject.toml validity
         run: poetry check
