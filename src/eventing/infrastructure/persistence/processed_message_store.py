@@ -1,4 +1,15 @@
-"""SQLAlchemy processed-message store for durable consumer idempotency."""
+"""SQLAlchemy processed-message store for durable consumer idempotency.
+
+This module provides the `SqlAlchemyProcessedMessageStore` which implements
+the `IProcessedMessageStore` protocol using SQLAlchemy. It attempts to insert a
+record for a given event and consumer, returning True if successful (meaning the
+event hasn't been processed yet) and False if the record already exists.
+
+See Also
+--------
+- eventing.infrastructure.persistence.processed_message_orm : The underlying ORM model
+- eventing.infrastructure.messaging.kafka_consumer_base : The consumer that uses this store
+"""
 
 from __future__ import annotations
 

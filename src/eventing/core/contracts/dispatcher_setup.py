@@ -1,4 +1,13 @@
-"""Helpers for wiring the in-process event dispatcher."""
+"""Helpers for wiring the in-process event dispatcher.
+
+This module provides factory functions like `build_event_bus` and data structures
+like `HandlerRegistration` to easily configure and instantiate event buses with
+pre-wired handlers.
+
+See Also
+--------
+- eventing.core.contracts.bus.event_bus : The event bus created by these factories
+"""
 
 from __future__ import annotations
 

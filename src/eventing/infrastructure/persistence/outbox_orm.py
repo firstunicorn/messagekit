@@ -1,4 +1,13 @@
-"""SQLAlchemy ORM model for transactional outbox storage."""
+"""SQLAlchemy ORM model for transactional outbox storage.
+
+This module defines `OutboxEventRecord`, which represents a domain event stored
+in the database waiting to be published to Kafka. It includes fields for the
+event payload, metadata, and tracking columns for publication status.
+
+See Also
+--------
+- eventing.infrastructure.outbox.outbox_repository : The repository that manages these records
+"""
 
 # pylint: disable=too-many-ancestors
 

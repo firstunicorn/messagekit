@@ -1,4 +1,14 @@
-"""Idempotent consumer base backed by a durable processed-message store."""
+"""Idempotent consumer base backed by a durable processed-message store.
+
+This module provides `IdempotentConsumerBase`, an abstract base class for Kafka
+consumers that ensures each event is processed exactly once. It extracts the
+`event_id` from incoming messages and attempts to claim it via the configured
+processed message store before delegating to `handle_event`.
+
+See Also
+--------
+- eventing.infrastructure.messaging.processed_message_store : The idempotency store protocol
+"""
 
 from __future__ import annotations
 

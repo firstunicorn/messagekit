@@ -1,4 +1,14 @@
-"""Async engine and session-factory helpers for eventing persistence."""
+"""Async engine and session-factory helpers for eventing persistence.
+
+This module provides a `create_session_factory` utility that builds a SQLAlchemy
+async engine and an `async_sessionmaker` configured for the eventing service. It
+leverages the `python-web-toolkit` session factory utilities internally.
+
+See Also
+--------
+- eventing.infrastructure.outbox.outbox_repository : Uses the session factory
+- sqlalchemy_async_session_factory : The underlying toolkit used
+"""
 
 from __future__ import annotations
 

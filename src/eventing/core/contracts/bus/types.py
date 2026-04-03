@@ -1,4 +1,12 @@
-"""Type aliases and lightweight records for event-bus dispatch."""
+"""Type aliases and lightweight records for event-bus dispatch.
+
+This module defines the type hints and data structures used internally by
+the `EventBus` to manage registered handlers and callbacks.
+
+See Also
+--------
+- eventing.core.contracts.bus.event_bus : The main event bus implementation
+"""
 
 from __future__ import annotations
 

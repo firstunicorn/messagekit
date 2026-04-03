@@ -1,4 +1,14 @@
-"""SQLAlchemy implementation of the outbox repository contract."""
+"""SQLAlchemy implementation of the outbox repository contract.
+
+This module provides `SqlAlchemyOutboxRepository` which implements the CRUD
+operations for storing domain events in the database transactionally alongside
+business data. It also tracks the published/failed status of events.
+
+See Also
+--------
+- eventing.infrastructure.persistence.outbox_orm : The underlying ORM model
+- eventing.infrastructure.outbox.outbox_worker : The worker that reads these events
+"""
 
 # pylint: disable=too-many-lines
 

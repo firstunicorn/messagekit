@@ -1,4 +1,15 @@
-"""Retrying outbox worker with DLQ fallback."""
+"""Retrying outbox worker with DLQ fallback.
+
+This module provides the `ScheduledOutboxWorker` which runs in the background,
+polling the outbox repository for unpublished events and publishing them to
+Kafka. It handles retries with exponential backoff and routes permanently failed
+events to a Dead Letter Queue (DLQ).
+
+See Also
+--------
+- eventing.infrastructure.outbox.outbox_repository : Where events are polled from
+- eventing.infrastructure.messaging.kafka_publisher : Used for publishing
+"""
 
 from __future__ import annotations
 

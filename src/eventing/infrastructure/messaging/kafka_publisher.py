@@ -1,4 +1,14 @@
-"""Kafka-backed event publisher built on FastStream."""
+"""Kafka-backed event publisher built on FastStream.
+
+This module provides the `KafkaEventPublisher` which handles routing
+events to their corresponding Kafka topics based on their event types,
+along with serialization and partition key extraction.
+
+See Also
+--------
+- eventing.infrastructure.messaging.broker_config : Kafka broker setup
+- eventing.infrastructure.outbox.outbox_worker : Background publisher
+"""
 
 from __future__ import annotations
 

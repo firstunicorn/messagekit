@@ -1,4 +1,15 @@
-"""Processed-message store contract for durable consumer idempotency."""
+"""Processed-message store contract for durable consumer idempotency.
+
+This module defines `IProcessedMessageStore`, an interface for tracking which
+events have been processed by specific consumers. Implementations of this protocol
+ensure that consumer event handlers are idempotent, even if the underlying message
+broker (e.g., Kafka) delivers the same message multiple times.
+
+See Also
+--------
+- eventing.infrastructure.messaging.kafka_consumer_base : The consumer base class that uses this
+- eventing.infrastructure.persistence.processed_message_store : The SQLAlchemy implementation
+"""
 
 from __future__ import annotations
 

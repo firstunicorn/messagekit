@@ -1,4 +1,13 @@
-"""Registry for mapping event type identifiers to event classes."""
+"""Registry for mapping event type identifiers to event classes.
+
+This module provides the `EventRegistry` which acts as a central catalog
+for all domain events. It handles type-safe deserialization by mapping string
+event types (e.g., "user.created") back to their corresponding Python classes.
+
+See Also
+--------
+- eventing.core.contracts.base_event : The base class for registered events
+"""
 
 from __future__ import annotations
 

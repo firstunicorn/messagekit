@@ -1,4 +1,14 @@
-"""Adapters from app settings to python-outbox-core config."""
+"""Adapters from app settings to python-outbox-core config.
+
+This module provides `build_outbox_config`, a utility function that translates
+the application's Pydantic `Settings` into the `OutboxConfig` model expected by
+the `python-outbox-core` library.
+
+See Also
+--------
+- eventing.config.Settings : The application settings
+- eventing.infrastructure.outbox.outbox_worker : The worker that uses this config
+"""
 
 from eventing.config import Settings
 from python_outbox_core import OutboxConfig

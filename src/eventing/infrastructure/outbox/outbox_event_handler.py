@@ -1,4 +1,13 @@
-"""In-process handler that writes domain events to the transactional outbox."""
+"""In-process handler that writes domain events to the transactional outbox.
+
+This module provides the `OutboxEventHandler` which acts as a bridge between
+the in-process `EventBus` and the persistent `SqlAlchemyOutboxRepository`.
+When registered as a subscriber, it automatically persists any emitted events.
+
+See Also
+--------
+- eventing.core.contracts.bus.event_bus : The event bus where this handler is registered
+"""
 
 from eventing.core.contracts import BaseEvent
 from python_domain_events import IDomainEventHandler

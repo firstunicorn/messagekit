@@ -1,4 +1,14 @@
-"""Health check adapter for outbox and broker infrastructure."""
+"""Health check adapter for outbox and broker infrastructure.
+
+This module provides `EventingHealthCheck`, which aggregates health signals from
+the database, the Kafka broker, and the outbox worker's lag metrics. It helps
+ensure that the event publishing pipeline is healthy and events aren't piling up.
+
+See Also
+--------
+- eventing.infrastructure.health : The health check namespace
+- eventing.infrastructure.outbox.outbox_repository : Used to measure outbox lag
+"""
 
 from __future__ import annotations
 

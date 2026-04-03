@@ -1,4 +1,13 @@
-"""Canonical event base shared across in-process and outbox flows."""
+"""Canonical event base shared across in-process and outbox flows.
+
+This module defines the foundational `BaseEvent` class that all domain
+events must inherit from. It provides common fields like event ID,
+timestamps, and tracking identifiers.
+
+See Also
+--------
+- eventing.core.contracts.event_registry : For registering event types
+"""
 
 from __future__ import annotations
 

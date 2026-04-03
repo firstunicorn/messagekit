@@ -1,4 +1,13 @@
-"""Factory for the FastStream Kafka broker."""
+"""Factory for the FastStream Kafka broker.
+
+This module provides `create_kafka_broker`, a utility that builds and configures
+a FastStream `KafkaBroker` instance using the application settings.
+
+See Also
+--------
+- eventing.config.Settings : The application settings
+- eventing.infrastructure.messaging.kafka_publisher : The publisher that uses this broker
+"""
 
 from faststream.kafka import KafkaBroker
 
