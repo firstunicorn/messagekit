@@ -1,6 +1,6 @@
-# GridFlow Eventing
+# Python Eventing
 
-Package-first universal eventing infrastructure shared across GridFlow
+Package-first universal eventing infrastructure shared across
 microservices. Services should install the `python-eventing` distribution and
 import it as `eventing`. The package owns reusable event contracts, outbox
 persistence, Kafka publishing/consumption primitives, DLQ handling, health

@@ -9,9 +9,9 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 SRC_DIR = ROOT_DIR / "src"
 sys.path.insert(0, str(SRC_DIR))
 
-project = "GridFlow Eventing"
-author = "GridFlow"
-copyright = "2026, GridFlow"
+project = "Python Eventing"
+author = "FirstUnicorn"
+copyright = "2026, FirstUnicorn"
 root_doc = "index"
 source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
 extensions = [
