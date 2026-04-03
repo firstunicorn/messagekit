@@ -1,4 +1,15 @@
-"""FastAPI application entrypoint for the eventing service."""
+"""FastAPI application entrypoint for the eventing service.
+
+This module provides the `create_app` factory and application lifecycle
+manager. It wires together the database session, Kafka broker, outbox repository,
+and background worker, ensuring all infrastructure is properly initialized
+and gracefully shut down.
+
+See Also
+--------
+- eventing.presentation.router : API routes registered with the application
+- eventing.config.Settings : Configuration used during initialization
+"""
 
 import asyncio
 from collections.abc import AsyncIterator

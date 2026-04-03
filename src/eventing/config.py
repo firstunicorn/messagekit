@@ -1,4 +1,15 @@
-"""Runtime settings for the eventing service."""
+"""Runtime settings for the eventing service.
+
+This module defines the `Settings` class that loads configuration from
+environment variables. It extends reusable base configurations from the
+toolkit (e.g., database, FastAPI) and adds eventing-specific variables
+like Kafka broker settings and outbox worker configuration.
+
+See Also
+--------
+- eventing.main : Where settings are used during app creation
+- fastapi_config_patterns : The toolkit base settings classes
+"""
 
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict

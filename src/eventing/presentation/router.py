@@ -1,4 +1,14 @@
-"""Top-level router registration for the eventing service."""
+"""Top-level router registration for the eventing service.
+
+This module provides the `api_router` that exposes HTTP endpoints.
+It includes liveness probes and the specialized `/health/outbox`
+endpoint that reports on the underlying broker and database infrastructure.
+
+See Also
+--------
+- eventing.infrastructure.health.outbox_health_check : Health checking logic
+- eventing.main : Where this router is included into the FastAPI app
+"""
 
 from typing import Any, cast
 

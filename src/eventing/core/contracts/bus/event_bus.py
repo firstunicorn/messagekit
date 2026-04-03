@@ -1,4 +1,14 @@
-"""Decorator-friendly facade for in-process event dispatch."""
+"""Decorator-friendly facade for in-process event dispatch.
+
+This module provides the `EventBus` class which acts as the main
+emitter and subscriber facade. It wraps the lower-level dispatch backends
+and provides decorator registration, tracing, and lifecycle hooks.
+
+See Also
+--------
+- eventing.core.contracts.bus.backends : Dispatch backends used by the bus
+- eventing.core.contracts.dispatch_hooks : Lifecycle hooks emitted by the bus
+"""
 
 from __future__ import annotations
 
