@@ -35,9 +35,8 @@ Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 - Python import package: `eventing`
 
 Services should consume the published package rather than a source checkout.
-The package stays out of the synchronous request path; Kafka remains shared
-infrastructure and each participating service uses local producer/consumer
-clients.
+Kafka remains shared infrastructure and each participating service uses
+local producer/consumer clients.
 
 ## Local development
 
