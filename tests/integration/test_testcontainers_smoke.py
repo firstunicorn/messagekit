@@ -13,7 +13,7 @@ from testcontainers.kafka import KafkaContainer  # type: ignore[import-untyped]
 from testcontainers.postgres import PostgresContainer  # type: ignore[import-untyped]
 
 from messaging.config import Settings
-from messaging.core.contracts import BaseEvent, EventRegistry
+from messaging.core.contracts import BaseEvent
 from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
 from messaging.infrastructure.persistence.orm_models.orm_base import Base
 from messaging.infrastructure.persistence.session import create_session_factory
@@ -64,9 +64,7 @@ async def test_postgres_and_kafka_testcontainers_support_eventing_smoke(
                 kafka_client_id="eventing-test",
             )
         )
-        registry = EventRegistry()
-        registry.register(ExampleEvent)
-        repository = SqlAlchemyOutboxRepository(session_factory, registry)
+        repository = SqlAlchemyOutboxRepository(session_factory)
         publisher = KafkaEventPublisher(broker)
         consumer = AIOKafkaConsumer(
             TEST_TOPIC,
@@ -80,8 +78,6 @@ async def test_postgres_and_kafka_testcontainers_support_eventing_smoke(
             await broker.connect()
             await broker.start()
             await repository.add_event(ExampleEvent(xp_delta=15))
-            pending = await repository.get_unpublished()
-            assert len(pending) == 1
             assert await broker.ping(1.0) is True
             await publisher.publish(TEST_MESSAGE)
             record = await asyncio.wait_for(consumer.getone(), timeout=30)

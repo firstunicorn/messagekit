@@ -5,11 +5,25 @@ consumers that ensures each event is processed exactly once. It extracts the
 `event_id` from incoming messages and attempts to claim it via the configured
 processed message store before delegating to `handle_event`.
 
+**Recommended Pattern:** For downstream services, prefer FastStream's native
+Pydantic deserialization by type-hinting your subscriber functions directly:
+
+    @broker.subscriber("user-events")
+    async def handle_user_event(event: UserCreatedEvent):
+        # FastStream automatically deserializes JSON to UserCreatedEvent
+        # No manual dict unpacking needed
+        ...
+
+This base class is provided for cases where you need programmatic idempotency
+control or when working with dynamic/polymorphic event types that cannot be
+determined at registration time.
+
 See Also
 --------
 - messaging.infrastructure.pubsub.consumer_validators : Event_id and name validation
 - messaging.infrastructure.pubsub.consumer_consume : Consume method implementation
 - messaging.infrastructure.pubsub.processed_message_store : The idempotency store protocol
+- FastStream Pydantic integration : https://faststream.ag2.ai/latest/getting-started/
 """
 
 from __future__ import annotations
@@ -23,7 +37,16 @@ from messaging.infrastructure.pubsub.processed_message_store import IProcessedMe
 
 
 class IdempotentConsumerBase(ABC):
-    """Skip duplicate events by identifier using a durable processed-message store."""
+    """Skip duplicate events by identifier using a durable processed-message store.
+
+    Note: For most use cases, prefer FastStream's native Pydantic deserialization
+    by type-hinting your @broker.subscriber functions with Pydantic models directly.
+
+    Use this base class only when you need:
+    - Programmatic control over idempotency logic
+    - Dynamic/polymorphic event types unknown at registration time
+    - Legacy compatibility with dict-based message handling
+    """
 
     def __init__(
         self,
@@ -45,4 +68,8 @@ class IdempotentConsumerBase(ABC):
 
     @abstractmethod
     async def handle_event(self, message: dict[str, Any]) -> None:
-        """Handle one deserialized event payload."""
+        """Handle one deserialized event payload.
+
+        For new implementations, consider using FastStream's native Pydantic
+        deserialization instead of this dict-based approach.
+        """

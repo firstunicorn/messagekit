@@ -6,7 +6,7 @@
 
 ## Overview
 
-The **EventBus** is an **optional** in-process domain event dispatcher that provides an abstraction layer over the transactional outbox pattern. 
+The **EventBus** is an **optional** in-process domain event dispatcher that provides an abstraction layer over the transactional outbox pattern.
 
 ### When EventBus is NOT Needed
 
@@ -60,7 +60,7 @@ EventBus (in-process dispatcher)
      ├→ AuditLogHandler → audit_service.log()
      ├→ MetricsHandler → prometheus.increment()
      └→ CacheInvalidator → redis.delete()
-     
+
 Outbox Worker (background)
      ↓
 Kafka Publisher → External broker
@@ -92,13 +92,13 @@ async def create_user(
 ):
     # Business logic
     user_id = await users_service.create_user(data, session)
-    
+
     # Persist event to outbox (same transaction)
     await outbox_repo.add_event(
         UserCreated(aggregate_id=f"user-{user_id}", user_id=user_id),
         session=session
     )
-    
+
     await session.commit()  # Atomic: user + event
     return {"user_id": user_id}
 ```
@@ -113,21 +113,21 @@ from messaging.infrastructure import OutboxEventHandler
 async def create_user(data: CreateUserRequest, request: Request):
     event_bus = request.app.state.event_bus
     outbox_repo = request.app.state.outbox_repository
-    
+
     # Register multiple handlers
     event_bus.register(UserCreated, OutboxEventHandler(outbox_repo))
     event_bus.register(UserCreated, AuditLogHandler())
     event_bus.register(UserCreated, MetricsHandler())
-    
+
     # Business logic
     user_id = await users_service.create_user(data)
-    
+
     # Dispatch → all handlers execute
     await event_bus.dispatch(UserCreated(
         aggregate_id=f"user-{user_id}",
         user_id=user_id,
     ))
-    
+
     return {"user_id": user_id}
 ```
 
@@ -523,13 +523,13 @@ EventBus is **optional** - the direct outbox pattern is often simpler and cleare
 async def create_user(data, session, outbox_repo):
     user = User(**data)
     session.add(user)
-    
+
     # Direct, simple, clear
     await outbox_repo.add_event(
         UserCreated(user_id=user.id),
         session=session
     )
-    
+
     await session.commit()
 ```
 
@@ -544,10 +544,10 @@ async def create_user(data, session, outbox_repo):
 async def create_user(data, session, event_bus):
     user = User(**data)
     session.add(user)
-    
+
     # Decoupled, flexible, multiple handlers
     await event_bus.dispatch(UserCreated(user_id=user.id))
-    
+
     await session.commit()
 ```
 

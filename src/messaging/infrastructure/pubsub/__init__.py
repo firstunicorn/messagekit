@@ -12,45 +12,37 @@ This module provides Kafka integration with built-in reliability patterns:
   - Automatic deduplication using ProcessedMessageStore
   - Prevents duplicate processing on Kafka redelivery
 
-**Dead Letter Queue**
-  - DeadLetterHandler : Route failures to DLQ topics
-  - Preserves original event metadata for debugging
-  - KafkaDeadLetterHandler : Kafka-specific DLQ with headers
-
 **Configuration**
   - create_kafka_broker : FastStream Kafka broker factory
   - IProcessedMessageStore : Interface for idempotency stores
 
+**Dead Letter Queue**
+  - DLQ handling delegated to native RabbitMQ DLX and Kafka Connect DLQ SMT
+  - DB bookkeeping maintained via dlq_bookkeeper consumer
+  - update_db_flag_for_dlq_event : Update database flags for DLQ events
+
 See Also
 --------
 - messaging.infrastructure.persistence : Idempotency store implementations
-- messaging.infrastructure.outbox : Outbox worker uses KafkaEventPublisher
+- messaging.infrastructure.pubsub.dlq_bookkeeper : DLQ database updater
 """
 
 from messaging.infrastructure.pubsub.broker_config import create_kafka_broker
 from messaging.infrastructure.pubsub.consumer_base.kafka_consumer_base import IdempotentConsumerBase
-from messaging.infrastructure.pubsub.dead_letter_handler import DeadLetterHandler
-from messaging.infrastructure.pubsub.kafka.kafka_dead_letter_handler import (
-    KafkaDeadLetterHandler,
-    KafkaDLQConfig,
-    build_dlq_message,
-    build_kafka_headers,
-    log_dlq_published,
-    log_dlq_routing,
+from messaging.infrastructure.pubsub.dlq_bookkeeper import (
+    extract_error_reason,
+    extract_event_id,
+    update_db_flag_for_dlq_event,
 )
 from messaging.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
 from messaging.infrastructure.pubsub.processed_message_store import IProcessedMessageStore
 
 __all__ = [
-    "DeadLetterHandler",
     "IProcessedMessageStore",
     "IdempotentConsumerBase",
-    "KafkaDLQConfig",
-    "KafkaDeadLetterHandler",
     "KafkaEventPublisher",
-    "build_dlq_message",
-    "build_kafka_headers",
     "create_kafka_broker",
-    "log_dlq_published",
-    "log_dlq_routing",
+    "extract_error_reason",
+    "extract_event_id",
+    "update_db_flag_for_dlq_event",
 ]

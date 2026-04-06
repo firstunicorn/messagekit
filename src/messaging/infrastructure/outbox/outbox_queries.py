@@ -1,8 +1,9 @@
 """Query operations for outbox event status and metrics.
 
 This module provides `OutboxQueryOperations` which handles read-only
-queries for outbox status, including unpublished event retrieval,
-counts, and lag metrics.
+queries for outbox status, including lag metrics and health checks.
+
+Outbox event publishing is delegated to Kafka Connect (Debezium CDC).
 
 See Also
 --------
@@ -18,9 +19,7 @@ from datetime import UTC, datetime
 from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from messaging.core.contracts import EventRegistry
 from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
-from python_outbox_core import IOutboxEvent
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -30,25 +29,9 @@ class OutboxQueryOperations:
     """Handle read-only queries for outbox status."""
 
     def __init__(
-        self, session_factory: async_sessionmaker[AsyncSession], registry: EventRegistry
+        self, session_factory: async_sessionmaker[AsyncSession]
     ) -> None:
         self._session_factory = session_factory
-        self._registry = registry
-
-    async def get_unpublished(self, limit: int = 100, offset: int = 0) -> list[IOutboxEvent]:
-        """Fetch unpublished events ordered by creation time."""
-        logger.debug("Fetching unpublished events (limit=%d, offset=%d)", limit, offset)
-        statement = (
-            select(OutboxEventRecord)
-            .where(OutboxEventRecord.published.is_(False), OutboxEventRecord.failed.is_(False))
-            .order_by(OutboxEventRecord.created_at.asc())
-            .offset(offset)
-            .limit(limit)
-        )
-        async with self._session_factory() as session:
-            records = (await session.scalars(statement)).all()
-        logger.debug("Retrieved %d unpublished events", len(records))
-        return [self._registry.deserialize(record.payload) for record in records]
 
     async def count_unpublished(self) -> int:
         """Count pending unpublished and non-failed events."""

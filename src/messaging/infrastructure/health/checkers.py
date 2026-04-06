@@ -1,15 +1,14 @@
-"""Health checkers for database, broker, and outbox lag.
+"""Health checkers for database and outbox lag.
 
-Individual async functions for health checks: database ping, broker ping,
-and outbox lag monitoring.
+Individual async functions for health checks: database ping and outbox lag monitoring.
+
+Broker health is exposed via FastStream's native make_ping_asgi endpoint.
 """
 
 from __future__ import annotations
 
 import logging
 from typing import Any
-
-from faststream.kafka import KafkaBroker
 
 from python_outbox_core.health_check import HealthStatus
 
@@ -26,21 +25,6 @@ async def check_database(repository: Any) -> dict[str, Any]:
     except Exception as exc:
         logger.warning("Database health check failed: %s", exc, exc_info=True)
         return {"status": HealthStatus.UNHEALTHY, "error": str(exc)}
-
-
-async def check_broker(broker: KafkaBroker) -> dict[str, Any]:
-    """Check whether the Kafka broker is reachable."""
-    try:
-        healthy = await broker.ping(1.0)
-    except Exception as exc:
-        logger.warning("Broker health check failed: %s", exc, exc_info=True)
-        return {"status": HealthStatus.UNHEALTHY, "error": str(exc)}
-    status = HealthStatus.HEALTHY if healthy else HealthStatus.UNHEALTHY
-    if status == HealthStatus.HEALTHY:
-        logger.debug("Broker health check passed")
-    else:
-        logger.warning("Broker health check failed: ping returned false")
-    return {"status": status}
 
 
 async def check_outbox_lag(

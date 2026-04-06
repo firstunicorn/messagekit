@@ -5,12 +5,10 @@ This layer provides concrete implementations of technical concerns:
 **Transactional Outbox**
   - OutboxEventHandler : Persist events in application transaction
   - SqlAlchemyOutboxRepository : Outbox table operations
-  - ScheduledOutboxWorker : Background publisher for unpublished events
 
 **Kafka Integration**
   - KafkaEventPublisher : Publish events to Kafka topics
   - IdempotentConsumerBase : Replay-safe consumer with deduplication
-  - DeadLetterHandler : Route failures to DLQ
 
 **Persistence**
   - OutboxEventRecord, ProcessedMessageRecord : SQLAlchemy ORM models
@@ -29,12 +27,7 @@ See Also
 """
 
 from messaging.infrastructure.health import EventingHealthCheck
-from messaging.infrastructure.outbox import (
-    OutboxEventHandler,
-    ScheduledOutboxWorker,
-    SqlAlchemyOutboxRepository,
-    build_outbox_config,
-)
+from messaging.infrastructure.outbox import OutboxEventHandler, SqlAlchemyOutboxRepository
 from messaging.infrastructure.persistence import (
     OutboxEventRecord,
     ProcessedMessageRecord,
@@ -42,7 +35,6 @@ from messaging.infrastructure.persistence import (
     create_session_factory,
 )
 from messaging.infrastructure.pubsub import (
-    DeadLetterHandler,
     IdempotentConsumerBase,
     IProcessedMessageStore,
     KafkaEventPublisher,
@@ -50,7 +42,6 @@ from messaging.infrastructure.pubsub import (
 )
 
 __all__ = [
-    "DeadLetterHandler",
     "EventingHealthCheck",
     "IProcessedMessageStore",
     "IdempotentConsumerBase",
@@ -58,10 +49,8 @@ __all__ = [
     "OutboxEventHandler",
     "OutboxEventRecord",
     "ProcessedMessageRecord",
-    "ScheduledOutboxWorker",
     "SqlAlchemyOutboxRepository",
     "SqlAlchemyProcessedMessageStore",
-    "build_outbox_config",
     "create_kafka_broker",
     "create_session_factory",
 ]

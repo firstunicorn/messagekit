@@ -1,5 +1,4 @@
-"""Consume method implementation for idempotent Kafka consumers.
-"""
+"""Consume method implementation for idempotent Kafka consumers."""
 
 from __future__ import annotations
 

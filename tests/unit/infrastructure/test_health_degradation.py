@@ -58,17 +58,3 @@ async def test_health_degraded_when_stale_event() -> None:
     assert result["status"] == "degraded"
     assert result["checks"]["outbox"]["pending_count"] == 1
     assert result["checks"]["outbox"]["oldest_event_age_seconds"] == 500.0
-
-
-async def test_health_unhealthy_when_broker_down() -> None:
-    repo = FakeRepository()
-    repo.pending_count = 0
-    repo.oldest_age = 0.0
-    checker = EventingHealthCheck(
-        cast(Any, repo),
-        cast(Any, FakeBroker(healthy=False)),
-        lag_threshold=10,
-        stale_after_seconds=300,
-    )
-    result = await checker.check_health()
-    assert result["status"] == "unhealthy"

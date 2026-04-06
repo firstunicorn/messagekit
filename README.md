@@ -79,7 +79,7 @@ async def create_user(
     # 1. Business logic
     user = User(**data.dict())
     session.add(user)
-    
+
     # 2. Persist event to outbox (same transaction)
     await outbox_repo.add_event(
         UserCreated(
@@ -89,10 +89,10 @@ async def create_user(
         ),
         session=session
     )
-    
+
     # 3. Commit both atomically
     await session.commit()
-    
+
     # 4. Outbox worker publishes to Kafka asynchronously
     return {"user_id": user.id}
 ```

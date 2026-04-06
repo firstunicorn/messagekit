@@ -1,9 +1,8 @@
 """FastAPI application entrypoint for the eventing service.
 
 This module provides the `create_app` factory and application lifecycle
-manager. It wires together the database session, Kafka broker, outbox repository,
-and background worker, ensuring all infrastructure is properly initialized
-and gracefully shut down.
+manager. It wires together the database session, Kafka broker, and outbox repository.
+Outbox publishing is delegated to Kafka Connect (Debezium).
 
 See Also
 --------
@@ -11,23 +10,17 @@ See Also
 - messaging.config.Settings : Configuration used during initialization
 """
 
-import asyncio
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager, suppress
+from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, FastAPI
 
 from fastapi_middleware_toolkit import setup_cors_middleware, setup_error_handlers
 from messaging.config import settings
-from messaging.core.contracts import EventRegistry, HandlerRegistration, build_event_bus
+from messaging.core.contracts import build_event_bus
 from messaging.infrastructure import (
-    DeadLetterHandler,
     EventingHealthCheck,
-    KafkaEventPublisher,
-    OutboxEventHandler,
-    ScheduledOutboxWorker,
     SqlAlchemyOutboxRepository,
-    build_outbox_config,
     create_kafka_broker,
     create_session_factory,
 )
@@ -56,14 +49,15 @@ def create_app() -> FastAPI:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Initialize and tear down outbox infrastructure and EventBus for the service.
-    
+    """Initialize and tear down infrastructure for the service.
+
     This lifespan manager wires up the complete event infrastructure:
     1. Database session factory for persistence
     2. EventBus for domain event dispatch (handlers registered per-route as needed)
     3. Kafka broker for external messaging
-    4. Outbox worker for reliable event publishing
-    
+
+    Outbox publishing is handled by Kafka Connect (Debezium CDC).
+
     The EventBus enables decoupled domain event dispatch within the service.
     Handlers can register for specific event types using:
         app.state.event_bus.register(EventType, handler)
@@ -72,38 +66,22 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         async def handle_event(event: EventType): ...
     """
     engine, session_factory = create_session_factory(settings.database_url)
-    registry = EventRegistry()
     broker = create_kafka_broker(settings)
-    repository = SqlAlchemyOutboxRepository(session_factory, registry)
-    publisher = KafkaEventPublisher(broker)
-    
+    repository = SqlAlchemyOutboxRepository(session_factory)
+
     # Initialize EventBus (handlers registered per-domain as needed)
     event_bus = build_event_bus([])
-    
-    worker = ScheduledOutboxWorker(
-        repository=repository,
-        publisher=publisher,
-        config=build_outbox_config(settings),
-        dead_letter_handler=DeadLetterHandler(repository, publisher),
-    )
+
     app.state.session_factory = session_factory
     app.state.outbox_health_check = EventingHealthCheck(repository, broker)
     app.state.outbox_repository = repository
     app.state.event_bus = event_bus  # Expose EventBus for API handlers
-    task: asyncio.Task[None] | None = None
     try:
-        if settings.outbox_worker_enabled:
-            await broker.connect()
-            await broker.start()
-            task = asyncio.create_task(worker.schedule_publishing())
+        await broker.connect()
+        await broker.start()
         yield
     finally:
-        if task is not None:
-            await worker.stop()
-            task.cancel()
-            with suppress(asyncio.CancelledError):
-                await task
-            await broker.close()
+        await broker.close()
         await engine.dispose()
 
 

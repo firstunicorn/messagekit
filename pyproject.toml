@@ -17,8 +17,9 @@ pydantic-settings = "^2.6.1"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
 asyncpg = "^0.30.0"
 alembic = "^1.14.0"
-faststream = {extras = ["kafka"], version = "^0.6.7"}
-tenacity = "^9.0.0"
+faststream = {extras = ["kafka", "rabbit"], version = "^0.6.7"}
+opentelemetry-api = "^1.24.0"
+prometheus-client = "^0.21.0"
 
 # python-web-toolkit packages: Use PyPI versions (^0.1.0), NOT local paths.
 # Local path dependencies cause issues:
@@ -44,6 +45,7 @@ fastapi-middleware-toolkit = "^0.1.0"
 pydantic-response-models = "^0.1.0"
 postgres-data-sanitizers = "^0.1.0"
 python-technical-primitives = "^0.1.0"
+opentelemetry-semantic-conventions = "^0.61b0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.8.4"
@@ -198,6 +200,14 @@ disallow_incomplete_defs = false
 
 [[tool.mypy.overrides]]
 module = [
+    "aiolimiter.*",
+    "prometheus_client.*",
+    "opentelemetry.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
     "faststream.*",
     "tenacity.*",
     "python_domain_events",
@@ -275,7 +285,7 @@ exclude_dirs = ["tests", ".venv", "build", "dist"]
 skips = ["B101"]
 
 [tool.vulture]
-paths = ["src"]
+paths = ["src", ".vulture-whitelist.py"]
 min_confidence = 80
 
 [tool.deptry]

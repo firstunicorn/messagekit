@@ -3,7 +3,7 @@
 This module defines the `Settings` class that loads configuration from
 environment variables. It extends reusable base configurations from the
 toolkit (e.g., database, FastAPI) and adds eventing-specific variables
-like Kafka broker settings and outbox worker configuration.
+like Kafka broker settings.
 
 See Also
 --------
@@ -39,26 +39,6 @@ class Settings(BaseFastAPISettings, BaseDatabaseSettings):  # pylint: disable=to
         description="Kafka bootstrap servers for the event broker.",
     )
     kafka_client_id: str = Field(default="eventing", description="Kafka client identifier.")
-    outbox_batch_size: int = Field(
-        default=100,
-        description="Maximum number of pending outbox events published per polling cycle.",
-    )
-    outbox_poll_interval_seconds: int = Field(
-        default=5,
-        description="Seconds to wait between outbox polling cycles.",
-    )
-    outbox_max_retry_count: int = Field(
-        default=3,
-        description="Maximum retry attempts before routing an event to failure handling.",
-    )
-    outbox_retry_backoff_multiplier: float = Field(
-        default=2.0,
-        description="Exponential backoff multiplier applied to publish retries.",
-    )
-    outbox_worker_enabled: bool = Field(
-        default=False,
-        description="Whether the background outbox publisher should start with the app.",
-    )
 
 
 settings = Settings()

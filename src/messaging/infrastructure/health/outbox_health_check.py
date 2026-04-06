@@ -1,8 +1,9 @@
 """Health check adapter for outbox and broker infrastructure.
 
 This module provides `EventingHealthCheck`, which aggregates health signals from
-the database, the Kafka broker, and the outbox worker's lag metrics. It helps
-ensure that the event publishing pipeline is healthy and events aren't piling up.
+the database, the Kafka broker, and the outbox worker's lag metrics.
+
+Native broker health is also exposed via FastStream's make_ping_asgi endpoint.
 
 See Also
 --------
@@ -18,7 +19,7 @@ from typing import Any
 
 from faststream.kafka import KafkaBroker
 
-from messaging.infrastructure.health.checkers import check_broker, check_database, check_outbox_lag
+from messaging.infrastructure.health.checkers import check_database, check_outbox_lag
 from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
 from python_outbox_core.health_check import HealthStatus, OutboxHealthCheck
 
@@ -27,7 +28,10 @@ logger.addHandler(logging.NullHandler())
 
 
 class EventingHealthCheck(OutboxHealthCheck):
-    """Aggregate database, broker, and outbox lag health signals."""
+    """Aggregate database and outbox lag health signals.
+
+    Note: Broker health is exposed via FastStream's native make_ping_asgi endpoint.
+    """
 
     def __init__(
         self,
@@ -45,7 +49,6 @@ class EventingHealthCheck(OutboxHealthCheck):
         """Return a combined health payload for the outbox subsystem."""
         checks = {
             "database": await check_database(self._repository),
-            "broker": await check_broker(self._broker),
             "outbox": await check_outbox_lag(
                 self._repository,
                 lag_threshold=self._lag_threshold,
