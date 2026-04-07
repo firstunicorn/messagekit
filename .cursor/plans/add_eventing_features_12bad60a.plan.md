@@ -2,11 +2,11 @@
 name: Add eventing resilience, observability, and admin features
 overview: "Add 11 features to eventing system via TDD: schema registry extension, FastStream OpenTelemetry wiring (simplified to built-in TelemetryMiddleware), circuit breaker, Kafka consumer group config, event replay API, rate limiting (aiolimiter), DLQ inspection/retry API, event contract testing, Prometheus/Grafana metrics (simplified to FastStream KafkaPrometheusMiddleware + custom for RabbitMQ), and Kafka-to-RabbitMQ bridge for integrated routing with native backpressure. Scope reduced from original after discovering FastStream and broker plugins cover Features 2 and 12 via middleware -- no custom OTel/Prometheus boilerplate needed. Also includes legacy code cleanup (removing generic DLQ) and outbox polling performance optimizations based on audit."
 todos:
-  - id: tdd-tests-first
-    content: "Phase 0: Write ALL tests first (features 1-12), run to confirm failures"
-    status: pending
   - id: audit-simplifications
-    content: "Phase 0.5: Apply Audit Simplifications (Outbox performance, DLQ cleanup)"
+    content: "Phase 0: Apply Audit Simplifications (Outbox performance, DLQ cleanup)"
+    status: pending
+  - id: tdd-tests-first
+    content: "Phase 1: Write ALL tests first (features 1-12), run to confirm failures"
     status: pending
   - id: 01-schema-registry
     content: "Feature 1: Schema registry extending CloudEvents + data_version (JSON schema validation)"
@@ -227,7 +227,7 @@ Every feature follows: (1) write tests that fail, (2) implement feature, (3) run
 
 ---
 
-## Phase 0: Write ALL failing tests first
+## Phase 1: Write ALL failing tests first
 
 Write tests for all 11 features before writing any production code. Run the full test suite once to confirm all new tests fail. Then implement features one by one.
 
@@ -283,9 +283,11 @@ ignore_missing_imports = true
 
 ---
 
-## Phase 0.5: Apply Audit Simplifications
+## Phase 0: Apply Audit Simplifications
 
 Before starting the main features, we will apply the findings from the codebase audit (`removal_plan.md` and `removal_simplification_plan.md`) to streamline the existing code.
+
+Once the legacy code is removed and the existing tests are passing again, we will proceed to **Phase 1** to write the new tests.
 
 ### 1. Remove Generic DLQ Handler
 - **Action**: Delete `src/messaging/infrastructure/pubsub/dead_letter_handler.py` (generic DLQ).
@@ -847,7 +849,9 @@ FastStream's Prometheus integration:
 
 ```mermaid
 flowchart TD
-    A["Phase 0: Write ALL failing tests"] --> B["Run tests: confirm all new tests fail"]
+    Pre["Phase 0: Apply Audit Simplifications"] --> Pre2["Run existing tests: confirm they pass"]
+    Pre2 --> A["Phase 1: Write ALL failing tests"]
+    A --> B["Run tests: confirm all new tests fail"]
     B --> C1["Feature 1: Schema registry"]
     B --> C2["Feature 2: OpenTelemetry"]
     B --> C3["Feature 3: Circuit breaker"]
