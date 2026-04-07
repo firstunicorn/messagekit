@@ -1,10 +1,10 @@
 ---
 name: Add eventing resilience, observability, and admin features
-overview: "Add 11 features to eventing system via TDD: schema registry extension, FastStream OpenTelemetry wiring (simplified to built-in TelemetryMiddleware), circuit breaker, Kafka consumer group config, event replay API, rate limiting (aiolimiter), DLQ inspection/retry API, event contract testing, Prometheus/Grafana metrics (simplified to FastStream KafkaPrometheusMiddleware + custom for RabbitMQ), and Kafka-to-RabbitMQ bridge for integrated routing with native backpressure. Scope reduced from original after discovering FastStream and broker plugins cover Features 2 and 12 via middleware -- no custom OTel/Prometheus boilerplate needed. Also includes legacy code cleanup (removing generic DLQ) and outbox polling performance optimizations based on audit."
+overview: "Add 11 features to eventing system via TDD: schema registry extension, FastStream OpenTelemetry wiring (simplified to built-in TelemetryMiddleware), circuit breaker, Kafka consumer group config, event replay API, rate limiting (aiolimiter), DLQ inspection/retry API, event contract testing, Prometheus/Grafana metrics (simplified to FastStream KafkaPrometheusMiddleware + custom for RabbitMQ), and Kafka-to-RabbitMQ bridge for integrated routing with native backpressure. Scope reduced from original after discovering FastStream and broker plugins cover Features 2 and 12 via middleware -- no custom OTel/Prometheus boilerplate needed. NOTE: Audit simplifications (removing generic DLQ, migrating to Kafka Connect CDC for outbox publishing, EventBus integration) were already completed in commit e230a15 and b2b5878. Ready to proceed with Phase 1 (TDD tests)."
 todos:
   - id: audit-simplifications
-    content: "Phase 0: Apply Audit Simplifications (Outbox performance, DLQ cleanup)"
-    status: pending
+    content: "Phase 0: Apply Audit Simplifications (Outbox performance, DLQ cleanup) - ALREADY DONE in commit e230a15"
+    status: completed
   - id: tdd-tests-first
     content: "Phase 1: Write ALL tests first (features 1-12), run to confirm failures"
     status: pending
@@ -283,29 +283,48 @@ ignore_missing_imports = true
 
 ---
 
-## Phase 0: Apply Audit Simplifications
+## Phase 0: Apply Audit Simplifications ✅ COMPLETED
 
-Before starting the main features, we will apply the findings from the codebase audit (`removal_plan.md` and `removal_simplification_plan.md`) to streamline the existing code.
+**Status**: All audit simplifications were already applied in commit `e230a15` (2026-04-06).
 
-Once the legacy code is removed and the existing tests are passing again, we will proceed to **Phase 1** to write the new tests.
+### What Was Already Removed/Simplified
 
-### 1. Remove Generic DLQ Handler
-- **Action**: Delete `src/messaging/infrastructure/pubsub/dead_letter_handler.py` (generic DLQ).
-- **Migration**: Update `src/messaging/infrastructure/outbox/outbox_worker/publish_logic.py` and `src/messaging/main.py` to use `KafkaDeadLetterHandler` instead. Kafka DLQ provides superior header enrichment and partition preservation.
+#### 1. Generic DLQ Handler ✅ DONE
+- **Deleted**: `src/messaging/infrastructure/pubsub/dead_letter_handler.py` (42 LOC)
+- **Deleted**: Entire `kafka_dead_letter_handler/` directory (7 files, 300+ LOC)
+- **Added**: `dlq_bookkeeper/` module (3 files) for minimal database flag synchronization
+- **Result**: Single DLQ implementation strategy, cleaner architecture
 
-### 2. Remove `EventRegistry` Overhead in Outbox Path
-- **Context**: The outbox worker currently deserializes database payloads back into full Pydantic `BaseEvent` models via `EventRegistry` just to re-serialize them to dictionaries for `KafkaEventPublisher`. This is a massive performance overhead. FastStream's `broker.publish()` natively accepts Python dictionaries.
-- **Action**: 
-  - Modify `OutboxQueryOperations.get_unpublished()` to yield a lightweight wrapper (e.g., `RawOutboxEvent`) containing the raw `dict[str, Any]` from the database.
-  - Completely remove `EventRegistry` dependency from `SqlAlchemyOutboxRepository` and `OutboxQueryOperations`.
+#### 2. EventRegistry Overhead in Outbox Path ✅ DONE  
+- **Migration to Kafka Connect CDC**: Outbox publishing now delegated to Debezium CDC
+- **Deleted**: Entire `outbox_worker/` directory (`__init__.py`, `publish_logic.py`, `worker.py`)
+- **Deleted**: `outbox_config.py`
+- **Updated**: `outbox_repository.py` - `get_unpublished()` now returns empty list with note: "This method is no longer used as Kafka Connect handles publishing"
+- **Result**: ~500 LOC reduction, eliminated JSON→Pydantic→Dict→JSON roundtrip
 
-### 3. Simplify Health Checks (`check_broker`)
-- **Context**: `check_broker` manually calls `await broker.ping()`.
-- **Action**: Keep `EventingHealthCheck` for aggregating DB/Lag/Broker health, but consider mounting FastStream's native ASGI `make_ping_asgi` if broker-only readiness probes are needed. Otherwise, rely on FastStream's native broker ping capabilities.
+#### 3. EventBus Integration Decision ✅ DONE (Commit b2b5878)
+- **Audit Recommendation**: Delete EventBus as unused legacy code (~500 LOC)
+- **Investigation**: Checked Kafka, RabbitMQ, FastStream, python-domain-events for in-process pub-sub
+- **Verdict**: EventBus provides unique features (lifecycle hooks, pluggable backends, dispatch tracing)
+- **Decision**: Integrate into production rather than delete well-tested code
+- **Changes**:
+  - Wired EventBus into `main.py` lifespan
+  - Exposed via `app.state.event_bus`
+  - Created comprehensive documentation (`docs/eventbus/usage-guide.md`, 600+ lines)
+  - Positioned as optional abstraction layer, NOT central component
+  - Direct outbox pattern remains primary/recommended approach
 
-### 4. Remove Manual Consumer Deserialization
-- **Context**: `IdempotentConsumerBase` currently accepts raw `message: dict[str, Any]` and extracts `event_id` manually.
-- **Action**: Update consumer documentation/examples to show that downstream services should rely entirely on FastStream's native Pydantic injection instead of manual deserialization using our `EventRegistry`. The custom `SchemaRegistry` (Feature 1) will be used for schema evolution validation, but FastStream handles Pydantic routing natively.
+### Summary of Completed Simplifications
+
+| Item | Status | LOC Impact | Commit |
+|------|--------|-----------|--------|
+| Generic DLQ Handler → Kafka-specific only | ✅ Deleted | -42 LOC | e230a15 |
+| Kafka DLQ Handler → dlq_bookkeeper | ✅ Simplified | -300 LOC | e230a15 |
+| Custom outbox worker → Kafka Connect CDC | ✅ Migrated | -500 LOC | e230a15 |
+| EventBus → Production integration | ✅ Integrated | +700 LOC | b2b5878 |
+| **Net architecture improvement** | **Completed** | **-142 LOC** | **Multiple** |
+
+**Next Phase**: Proceed directly to **Phase 1: Write ALL tests first** (TDD approach).
 
 ---
 
