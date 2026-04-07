@@ -37,7 +37,7 @@ async def update_db_flag_for_dlq_event(
         session_factory: SQLAlchemy async session factory
 
     Raises:
-        ValueError: If event_id cannot be extracted
+        Exception: If event_id extraction or database update fails
     """
     # Local import to avoid circular dependency
     from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository

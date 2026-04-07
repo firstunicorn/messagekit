@@ -64,6 +64,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     Or use decorator syntax:
         @app.state.event_bus.subscriber(EventType)
         async def handle_event(event: EventType): ...
+
+    Args:
+        app: FastAPI application instance
+
+    Yields:
+        None: Control flow during application runtime
     """
     engine, session_factory = create_session_factory(settings.database_url)
     broker = create_kafka_broker(settings)

@@ -72,4 +72,7 @@ class IdempotentConsumerBase(ABC):
 
         For new implementations, consider using FastStream's native Pydantic
         deserialization instead of this dict-based approach.
+
+        Args:
+            message: Deserialized event payload as dictionary
         """

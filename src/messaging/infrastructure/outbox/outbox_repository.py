@@ -49,6 +49,13 @@ class SqlAlchemyOutboxRepository(IOutboxRepository):
 
         Note: This method is no longer used as Kafka Connect handles publishing.
         Returns empty list for interface compatibility with python-outbox-core.
+
+        Args:
+            limit: Maximum number of events to fetch (unused)
+            offset: Number of events to skip (unused)
+
+        Returns:
+            Empty list (publishing delegated to Kafka Connect CDC)
         """
         return []
 

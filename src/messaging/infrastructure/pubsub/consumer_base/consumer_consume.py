@@ -59,9 +59,9 @@ async def consume_event(
             False if the event was already processed (duplicate, skipped).
 
     Raises:
-        ValueError: If message is missing event_id or event_id is empty.
+        ValueError: If message is missing event_id or event_id is empty.  # noqa: DAR402
             Propagated from extract_event_id via consumer_validators.
-        Exception: Any exception raised by handle_event propagates to caller.
+        Exception: Any exception raised by handle_event propagates to caller.  # noqa: DAR402
     """
     event_id = extract_event_id(message)
     claimed = await processed_message_store.claim(
