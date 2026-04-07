@@ -51,6 +51,34 @@ alwaysApply: true
 
 ## Format
 
+**CRITICAL: Conventional Commits format - the part in parentheses IS the scope**
+
+```
+type(scope): subject in sentence case
+```
+
+**Format breakdown:**
+- `type` = commit type (feat, fix, refactor, docs, test, chore, perf)
+- `(scope)` = scope in PARENTHESES (module/feature/component name)
+- `: ` = colon and space
+- `subject` = description in sentence case
+
+**Correct title examples:**
+- ✅ `feat(eventbus): integrate in-process domain event dispatcher`
+- ✅ `fix(outbox): handle null timestamps in recovery query`
+- ✅ `refactor(dlq): extract bookkeeper to separate module`
+- ✅ `docs(plan): mark Phase 0 audit simplifications as completed`
+- ✅ `test(chaos): add consumer crash recovery tests`
+
+**Incorrect title examples:**
+- ❌ `feat: integrate EventBus` (missing scope)
+- ❌ `feat[eventbus]: integrate dispatcher` (wrong brackets - use parentheses)
+- ❌ `Feat(EventBus): Integrate Dispatcher` (Title Case - use sentence case)
+- ❌ `eventbus: integrate dispatcher` (missing type)
+- ❌ `add eventbus integration` (no conventional format at all)
+
+**Full message structure:**
+
 ```
 type(scope): subject in sentence case
 
@@ -72,6 +100,7 @@ type(scope): subject in sentence case
 - `docs` - documentation
 - `test` - tests
 - `chore` - maintenance
+- `perf` - performance improvement
 
 Use `!` for breaking changes: `feat!` or `refactor!`
 
@@ -120,11 +149,18 @@ Updated documentation.
 ```
 
 **Problems:**
-- Title Case in subject and headers
-- "User requested" - robotic language
-- No starting context
-- Vague changes without technical detail
-- No explanation of decisions or philosophy
+- ❌ Title Case in type: `Feat` should be `feat`
+- ❌ Title Case in scope: `EventBus` should be `eventbus`
+- ❌ Title Case in subject: `Add EventBus Integration` should be sentence case
+- ❌ "User requested" - robotic language
+- ❌ No starting context
+- ❌ Vague changes without technical detail
+- ❌ No explanation of decisions or philosophy
+
+**Correct format would be:**
+```
+feat(eventbus): integrate in-process domain event dispatcher into production
+```
 
 ## Checklist
 
@@ -139,10 +175,13 @@ Updated documentation.
 - [ ] Excluded only `.cursor/`, `.specstory/`, or user-requested
 - [ ] Grouped ALL related changes together
 
-**Message quality:**
-- [ ] Sentence case throughout (except proper names)
-- [ ] Natural narrative flow
-- [ ] Starts with context
-- [ ] Technical specifics included
+**Commit message quality:**
+- [ ] **Title follows Conventional Commits format: `type(scope): description`**
+- [ ] **Type in lowercase** (feat, fix, refactor, docs, test, chore)
+- [ ] **Scope in parentheses** - the part in () is the scope
+- [ ] Subject line in sentence case (except proper names)
+- [ ] Starts with context/starting point
+- [ ] Natural narrative flow (no "user did X")
+- [ ] Technical specifics (file paths, function names)
 - [ ] Design decisions explained
 - [ ] Breaking changes marked if applicable
