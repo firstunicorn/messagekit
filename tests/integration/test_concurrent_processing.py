@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from typing import Any
 
 import pytest
 
@@ -14,7 +15,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_concurrent_claim_same_consumer_one_succeeds(
-    sqlite_session_factory: tuple,
+    sqlite_session_factory: tuple[Any, Any],
 ) -> None:
     """Only one claim should succeed when two concurrent calls race."""
     engine, factory = sqlite_session_factory
@@ -33,7 +34,7 @@ async def test_concurrent_claim_same_consumer_one_succeeds(
 
 
 async def test_concurrent_claim_different_consumers_both_succeed(
-    sqlite_session_factory: tuple,
+    sqlite_session_factory: tuple[Any, Any],
 ) -> None:
     """Different consumer names should each be able to claim."""
     engine, factory = sqlite_session_factory
@@ -49,4 +50,4 @@ async def test_concurrent_claim_different_consumers_both_succeed(
             try_claim("worker-b"),
         )
         await session.commit()
-    assert results == [True, True]
+    assert list(results) == [True, True]

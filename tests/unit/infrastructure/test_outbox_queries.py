@@ -8,6 +8,8 @@ These tests verify the query operations for legacy compatibility.
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from messaging.infrastructure.outbox.outbox_queries import OutboxQueryOperations
@@ -17,7 +19,7 @@ from tests.unit.infrastructure.conftest import ExampleEvent
 
 @pytest.mark.asyncio
 async def test_count_unpublished_excludes_failed(
-    sqlite_session_factory: tuple,
+    sqlite_session_factory: tuple[Any, Any],
 ) -> None:
     """Count should exclude events marked as failed."""
     engine, factory = sqlite_session_factory

@@ -43,6 +43,7 @@ def test_round_trip_lossless_serialization(
     assert restored.event_id == event.event_id
     assert restored.event_type == event.event_type
     assert restored.aggregate_id == event.aggregate_id
+    assert isinstance(restored, ExampleEvent)
     assert restored.xp_delta == event.xp_delta
 
 

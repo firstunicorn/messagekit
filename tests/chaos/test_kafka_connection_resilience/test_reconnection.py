@@ -31,8 +31,10 @@ async def test_publisher_works_after_kafka_restart(
     await consumer.start()
     kafka.stop()
     await asyncio.sleep(5)
-    kafka.start()
-    await asyncio.sleep(10)
+    # Restart Kafka with longer timeout - container startup can be slow
+    kafka.start(timeout=1800)
+    # Wait longer for Kafka to be fully ready after restart
+    await asyncio.sleep(20)
     await consumer.stop()
     bootstrap2 = kafka.get_bootstrap_server()
     consumer2 = AIOKafkaConsumer(

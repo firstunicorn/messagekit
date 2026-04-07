@@ -8,33 +8,20 @@ import os
 from uuid import uuid4
 
 import pytest
-from aiokafka import AIOKafkaConsumer  # type: ignore[import-untyped]
-from testcontainers.kafka import KafkaContainer  # type: ignore[import-untyped]
-from testcontainers.postgres import PostgresContainer  # type: ignore[import-untyped]
+from aiokafka import AIOKafkaConsumer
+from testcontainers.kafka import KafkaContainer
+from testcontainers.postgres import PostgresContainer
 
 from messaging.config import Settings
-from messaging.core.contracts import BaseEvent
 from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
 from messaging.infrastructure.persistence.orm_models.orm_base import Base
 from messaging.infrastructure.persistence.session import create_session_factory
 from messaging.infrastructure.pubsub import KafkaEventPublisher, create_kafka_broker
-
-TEST_TOPIC = "gamification.XPAwarded"
-TEST_MESSAGE = {
-    "eventType": TEST_TOPIC,
-    "aggregateId": "user-123",
-    "source": "gamification-service",
-    "xpDelta": 15,
-}
-
-
-class ExampleEvent(BaseEvent):  # pylint: disable=too-many-ancestors
-    """Concrete event used for container-backed smoke coverage."""
-
-    event_type: str = "gamification.XPAwarded"
-    aggregate_id: str = "user-123"
-    source: str = "gamification-service"
-    xp_delta: int
+from tests.integration.test_testcontainers_smoke.fixtures import (
+    TEST_MESSAGE,
+    TEST_TOPIC,
+    ExampleEvent,
+)
 
 
 @pytest.mark.asyncio

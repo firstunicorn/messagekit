@@ -30,6 +30,6 @@ async def test_outbox_health_returns_unavailable_without_checker() -> None:
 async def test_outbox_health_uses_checker_when_present() -> None:
     """Route should delegate to the configured checker."""
 
-    result = await outbox_health(checker=DummyChecker())  # type: ignore[call-arg]
+    result = await outbox_health(checker=DummyChecker())  # type: ignore[arg-type]
 
     assert result["status"] == "healthy"

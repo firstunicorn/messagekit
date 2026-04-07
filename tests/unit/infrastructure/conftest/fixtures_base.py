@@ -1,4 +1,4 @@
-"""Shared test fixtures for infrastructure tests."""
+"""Base test fixtures for infrastructure tests."""
 
 from __future__ import annotations
 
@@ -81,19 +81,3 @@ class FakeBroker:
 
     async def ping(self, timeout: float | None) -> bool:
         return self.healthy and timeout == 1.0
-
-
-class FakeKafkaBroker:
-    """Broker fake that records publish arguments."""
-
-    def __init__(self) -> None:
-        self.published: list[tuple[dict[str, object], str, bytes | None]] = []
-
-    async def publish(
-        self,
-        message: dict[str, object],
-        *,
-        topic: str,
-        key: bytes | None,
-    ) -> None:
-        self.published.append((message, topic, key))

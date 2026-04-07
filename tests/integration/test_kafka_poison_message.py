@@ -13,7 +13,12 @@ from testcontainers.kafka import KafkaContainer
 from messaging.core.contracts import BaseEvent
 
 
-class PoisonTestEvent(BaseEvent):
+class PoisonTestEvent(BaseEvent):  # pylint: disable=too-many-ancestors
+    """Test event for poison message DLQ validation.
+
+    Note: Inherits from BaseEvent which has Pydantic ancestry chain.
+    Pylint warning disabled as this depth is required by framework.
+    """
     event_type: str = "test.poison"
     aggregate_id: str = "dlq-001"
     source: str = "dlq-test"

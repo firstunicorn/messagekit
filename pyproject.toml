@@ -193,6 +193,7 @@ warn_unused_configs = true
 warn_no_return = true
 strict_equality = true
 
+# Relax type checking for test files (but keep import-untyped enabled)
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
@@ -217,8 +218,20 @@ module = [
 ]
 ignore_missing_imports = true
 
+# Test-only libraries without type stubs (py.typed marker)
+# These are third-party testing dependencies that don't provide type information.
+# This is expected and acceptable for test infrastructure.
+[[tool.mypy.overrides]]
+module = [
+    "aiokafka",           # Async Kafka client for Python (test fixtures)
+    "aiokafka.*",
+    "testcontainers",     # Docker container management for integration tests
+    "testcontainers.*",
+]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
-testpaths = ["tests/unit", "tests/integration", "tests/property_based"]
+testpaths = ["tests/unit", "tests/integration", "tests/property_based", "tests/chaos"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
