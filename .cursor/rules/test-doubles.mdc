@@ -1,0 +1,83 @@
+---
+description: Test double implementation standards for external libraries
+alwaysApply: true
+---
+
+# Test Double Standards
+
+## Core principle
+
+**Test doubles are documentation artifacts, not code artifacts.**
+
+Implement from official documentation, validate against reality with runtime inspection.
+
+## Implementation checklist
+
+When creating test doubles (fakes, mocks) for external libraries:
+
+- [ ] **Source from documentation** - NOT by copying real class
+- [ ] **Add documentation URL** in class docstring
+- [ ] **Create contract test** using `inspect.signature()`
+- [ ] **Add type safety helper** for Mypy validation
+- [ ] **Document intentional differences** if types differ
+
+## Code patterns
+
+### Fake implementation
+
+```python
+class FakeKafkaBroker:
+    """Broker fake that records publish arguments.
+    
+    Signature sourced from FastStream official documentation:
+    https://faststream.ag2.ai/latest/api/faststream/kafka/broker/KafkaBroker/
+    
+    This fake is intentionally NOT copied from real KafkaBroker import.
+    Implemented from docs, validated by test_fake_broker_contract.py.
+    
+    This approach ensures:
+    - We follow documented API (source of truth)
+    - Contract test catches doc vs. implementation drift
+    - No circular validation
+    """
+```
+
+### Contract test
+
+```python
+def test_fake_matches_real_signature() -> None:
+    """Validate fake stays in sync with real implementation.
+    
+    Uses inspect.signature() - no infrastructure needed.
+    Catches API changes immediately during pytest.
+    """
+    real_sig = inspect.signature(RealClass.method)
+    fake_sig = inspect.signature(FakeClass.method)
+    
+    # Validate parameter names, defaults, types
+```
+
+### Type safety helper
+
+```python
+async def _test_helper(client: RealClass) -> None:
+    """Helper accepts real type for Mypy validation."""
+    await client.method(...)
+
+# Tests cast fake to real type
+fake = FakeClass()
+await _test_helper(cast(RealClass, fake))
+```
+
+## What to avoid
+
+❌ **Circular validation**: Copying real class then testing fake matches real  
+❌ **Missing documentation link**: Always include source URL  
+❌ **Skipping contract test**: Drift detection is critical  
+❌ **Infrastructure dependencies**: Contract tests should use `inspect.signature()` only
+
+## Files to check
+
+- `tests/unit/infrastructure/conftest.py` - FakeKafkaBroker example
+- `tests/unit/infrastructure/test_fake_broker_contract.py` - Contract test example
+- `docs/testing/test-double-contract-validation.md` - Full documentation
