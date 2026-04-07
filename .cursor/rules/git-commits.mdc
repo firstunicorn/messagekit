@@ -1,10 +1,53 @@
 ---
-description: Git commit message standards - sentence case, organic narrative, technical detail
+description: Git commit message standards - sentence case, organic narrative, technical detail, VERIFY ALL CHANGES FIRST
 globs: .git/COMMIT_EDITMSG
 alwaysApply: true
 ---
 
 # Commit message standards
+
+## CRITICAL: pre-commit verification
+
+**BEFORE writing any commit message, ALWAYS:**
+
+1. **Review your FULL context window deeply**
+   - Scroll through ENTIRE conversation to see all work done
+   - Changes from 50+ messages ago are still uncommitted
+   - Each fix, refactor, test, config change accumulates
+   - Don't rely on recent memory - actively audit full session
+
+2. **Run `git status`** - see ALL modified/deleted/untracked files
+   - Compare file list against context window review
+   - Every file should correlate to work you remember
+   - Missing correlation? Deep-dive that file's changes
+
+3. **Review full diff deeply** - `git diff --stat` for overview, `git diff` for details
+   - Check WHAT changed in each file
+   - Cross-reference changes with conversation context
+   - Verify changes match your understanding
+
+4. **Check for forgotten changes:**
+   - Test files modified earlier in session (50+ messages ago)
+   - Configuration files (pyproject.toml, .env, docker-compose.yml)
+   - Documentation files created
+   - Test fixtures split into folders
+   - Refactored modules moved to new locations
+   - Type annotations added
+   - Linter suppressions
+   - Timeout adjustments
+
+5. **Commit ALL related work together** - not piecemeal
+   - All work toward same goal = one commit
+   - "Fix linters" = tests + configs + docs + source
+
+**Exclude ONLY:** `.cursor/`, `.specstory/`, or user-explicitly-requested files
+
+**Anti-patterns (universal examples):**
+- Feature: Commit new auth module, forget tests and .env.example
+- Bug fix: Commit route fix, forget validator changes and tests
+- Refactor: Commit extracted service, forget updated imports in 10 files
+- Deps: Commit pyproject.toml update, forget lock file and migrations
+- Docs: Commit API docs, forget example code and updated README
 
 ## Format
 
@@ -85,6 +128,18 @@ Updated documentation.
 
 ## Checklist
 
+**Pre-commit verification (DO FIRST):**
+- [ ] Reviewed ENTIRE context window (scroll to session start)
+- [ ] Noted ALL work: fixes, refactors, tests, configs, docs
+- [ ] Ran `git status` to see ALL changes
+- [ ] Reviewed `git diff --stat` for complete scope
+- [ ] Cross-referenced git status with context (every file correlates)
+- [ ] Deep-reviewed diffs for each file
+- [ ] Checked for tests, configs, docs, fixtures
+- [ ] Excluded only `.cursor/`, `.specstory/`, or user-requested
+- [ ] Grouped ALL related changes together
+
+**Message quality:**
 - [ ] Sentence case throughout (except proper names)
 - [ ] Natural narrative flow
 - [ ] Starts with context
