@@ -3,7 +3,7 @@ name: Add comprehensive eventing tests
 overview: "Add 10 new test groups covering eventing system best practices: event ordering, poison messages, event contract validation, consumer groups, outbox recovery, e2e flow, health degradation, chaos resilience, serialization edge cases, and concurrency."
 todos:
   - id: apply-audit-updates
-    content: "Review tests logic to reflect audit decisions (e.g. generic DLQ removal)"
+    content: Review tests logic to reflect audit decisions (e.g. generic DLQ removal)
     status: done
   - id: unit-infrastructure-untested
     content: "Add unit tests: consumer_validators, consumer_helpers, dead_letter_handler, outbox_queries, outbox_config"

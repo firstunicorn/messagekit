@@ -7,40 +7,40 @@ todos:
     status: completed
   - id: tdd-tests-first
     content: "Phase 1: Write ALL tests first (features 1-12), run to confirm failures"
-    status: pending
+    status: completed
   - id: 01-schema-registry
     content: "Feature 1: Schema registry extending CloudEvents + data_version (JSON schema validation)"
-    status: pending
+    status: completed
   - id: 02-opentelemetry
     content: "Feature 2: Wire OpenTelemetry via FastStream TelemetryMiddleware (simplified to 3 lines: TelemetryMiddleware added to both brokers)"
-    status: pending
+    status: completed
   - id: 03-circuit-breaker
     content: "Feature 3: Circuit breaker for broker failures (async state machine)"
-    status: pending
+    status: completed
   - id: 05-consumer-group-config
     content: "Feature 5: Kafka consumer group cooperative rebalancing + static membership config"
-    status: pending
+    status: completed
   - id: 06-replay-api
     content: "Feature 6: Event replay / time-travel HTTP API endpoint"
-    status: pending
+    status: completed
   - id: 07-rate-limiting
     content: "Feature 7: Rate limiting via aiolimiter for both Kafka and RabbitMQ paths"
-    status: pending
+    status: completed
   - id: 08-kafka-rabbitmq-bridge
     content: "Feature 8: Kafka-to-RabbitMQ bridge (integrated routing with native backpressure)"
-    status: pending
+    status: completed
   - id: 09-dlq-admin-api
     content: "Feature 9: DLQ inspection and retry HTTP admin API (extend existing KafkaDeadLetterHandler)"
-    status: pending
+    status: completed
   - id: 10-contract-testing
     content: "Feature 10: Event contract testing with version enforcement"
-    status: pending
+    status: completed
   - id: 12-prometheus-metrics
     content: "Feature 12: Prometheus metrics via FastStream KafkaPrometheusMiddleware + custom RabbitMQ Prometheus middleware (simplified from original)"
-    status: pending
+    status: completed
   - id: run-all-checks
     content: Run all linters and tests to verify everything passes
-    status: pending
+    status: completed
 isProject: false
 ---
 
@@ -295,7 +295,7 @@ ignore_missing_imports = true
 - **Added**: `dlq_bookkeeper/` module (3 files) for minimal database flag synchronization
 - **Result**: Single DLQ implementation strategy, cleaner architecture
 
-#### 2. EventRegistry Overhead in Outbox Path ✅ DONE  
+#### 2. EventRegistry Overhead in Outbox Path ✅ DONE
 - **Migration to Kafka Connect CDC**: Outbox publishing now delegated to Debezium CDC
 - **Deleted**: Entire `outbox_worker/` directory (`__init__.py`, `publish_logic.py`, `worker.py`)
 - **Deleted**: `outbox_config.py`

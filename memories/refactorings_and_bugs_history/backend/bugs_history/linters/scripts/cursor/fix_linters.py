@@ -1,5 +1,4 @@
 """Fix script for pydocstyle D405 'See also' capitalization and other automated fixes."""
-import re
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent  # .cursor/ -> eventing/
@@ -24,7 +23,7 @@ print("=== Fixing D102: SequentialDispatchBackend.invoke ===")
 backends = SRC / "core" / "contracts" / "bus" / "backends.py"
 content = backends.read_text(encoding="utf-8")
 content = content.replace(
-    '    async def invoke(\n        self,\n        event: BaseEvent,\n        handlers: list[RegisteredHandler],\n        invoke_one: Callable[[RegisteredHandler], Awaitable[None]],\n    ) -> None:\n        _ = event',
+    "    async def invoke(\n        self,\n        event: BaseEvent,\n        handlers: list[RegisteredHandler],\n        invoke_one: Callable[[RegisteredHandler], Awaitable[None]],\n    ) -> None:\n        _ = event",
     '    async def invoke(\n        self,\n        event: BaseEvent,\n        handlers: list[RegisteredHandler],\n        invoke_one: Callable[[RegisteredHandler], Awaitable[None]],\n    ) -> None:\n        """Run the provided handlers for one event."""\n        _ = event',
 )
 backends.write_text(content, encoding="utf-8")
