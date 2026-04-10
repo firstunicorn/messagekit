@@ -3,9 +3,8 @@
 from typing import Any
 
 from messaging.infrastructure.pubsub import IProcessedMessageStore
-from messaging.infrastructure.pubsub.bridge.routing_key_builder import (
-    build_routing_key,
-)
+from messaging.infrastructure.pubsub.bridge.routing_key_builder import build_routing_key
+from messaging.infrastructure.pubsub.rabbit.publisher import RabbitEventPublisher
 
 
 class BridgeConsumer:
@@ -13,7 +12,7 @@ class BridgeConsumer:
 
     def __init__(
         self,
-        rabbit_publisher: Any,  # RabbitMQ publisher (not yet implemented)
+        rabbit_publisher: RabbitEventPublisher,
         processed_message_store: IProcessedMessageStore,
         routing_key_template: str = "{event_type}",
     ) -> None:

@@ -25,7 +25,18 @@ class FakeBroker:
         self.started = True
 
     async def close(self) -> None:
+        """Deprecated method kept for backwards compatibility."""
         self.closed = True
+
+    async def stop(self) -> None:
+        """Modern method for stopping the broker."""
+        self.closed = True
+
+    def subscriber(self, topic: str):
+        """Mock subscriber decorator that returns the decorated function unchanged."""
+        def decorator(func):
+            return func
+        return decorator
 
 
 class FakeEngine:

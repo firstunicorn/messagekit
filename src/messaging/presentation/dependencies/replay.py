@@ -7,9 +7,7 @@ from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from messaging.infrastructure.outbox.outbox_replay import OutboxReplayService
-from messaging.infrastructure.outbox.outbox_replay_queries import (
-    OutboxReplayQueries,
-)
+from messaging.infrastructure.outbox.outbox_replay_queries import OutboxReplayQueries
 from messaging.infrastructure.persistence.dependencies import get_session
 from messaging.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
 

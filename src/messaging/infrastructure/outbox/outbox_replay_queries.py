@@ -2,14 +2,12 @@
 
 from datetime import datetime
 
-from python_outbox_core.events import IOutboxEvent
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from messaging.core.contracts.base_event import BaseEvent
-from messaging.infrastructure.persistence.orm_models.outbox_orm import (
-    OutboxEventRecord,
-)
+from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
+from python_outbox_core.events import IOutboxEvent
 
 
 class OutboxReplayQueries:

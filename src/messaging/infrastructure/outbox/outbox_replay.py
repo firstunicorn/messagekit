@@ -2,12 +2,9 @@
 
 from datetime import datetime
 
-from python_outbox_core.events import IOutboxEvent
-
-from messaging.infrastructure.outbox.outbox_replay_queries import (
-    OutboxReplayQueries,
-)
+from messaging.infrastructure.outbox.outbox_replay_queries import OutboxReplayQueries
 from messaging.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
+from python_outbox_core.events import IOutboxEvent
 
 
 class OutboxReplayService:

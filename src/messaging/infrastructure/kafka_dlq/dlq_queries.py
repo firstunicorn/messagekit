@@ -3,9 +3,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from messaging.infrastructure.persistence.orm_models.outbox_orm import (
-    OutboxEventRecord,
-)
+from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
 
 
 class DLQQueries:

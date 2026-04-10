@@ -3,12 +3,12 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from messaging.infrastructure.kafka_dlq.dlq_admin_service import DLQAdminService
 from messaging.infrastructure.kafka_dlq.dlq_queries import DLQQueries
 from messaging.infrastructure.outbox.outbox_crud import OutboxCrudOperations
 from messaging.infrastructure.persistence.dependencies import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/dlq", tags=["dlq"])
 
