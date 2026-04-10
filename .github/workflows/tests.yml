@@ -1,0 +1,146 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      # These services run alongside the job
+      # Testcontainers will use the Docker daemon
+      docker:
+        image: docker:dind
+        options: --privileged
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 2.3.3
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: poetry install --with test --no-interaction
+
+      - name: Run all linters
+        run: |
+          echo "::group::Ruff"
+          poetry run ruff check src/ tests/
+          echo "::endgroup::"
+          
+          echo "::group::isort"
+          poetry run isort --check-only src/ tests/
+          echo "::endgroup::"
+          
+          echo "::group::mypy"
+          poetry run mypy src/
+          echo "::endgroup::"
+
+      - name: Run ALL tests (including RabbitMQ)
+        run: |
+          poetry run pytest tests/ -v \
+            --cov=src \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-fail-under=80 \
+            --durations=10 \
+            -m "not manual"
+        env:
+          # Ensure testcontainers can access Docker
+          DOCKER_HOST: unix:///var/run/docker.sock
+          # Increase testcontainer timeout for CI
+          TESTCONTAINERS_WAIT_TIMEOUT: "300"
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Upload coverage HTML
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-html
+          path: htmlcov/
+          retention-days: 30
+
+      - name: Test summary
+        if: always()
+        run: |
+          echo "### Test Results 🎯" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f .coverage ]; then
+            poetry run coverage report --format=markdown >> $GITHUB_STEP_SUMMARY || echo "Coverage report generation failed"
+          fi
+
+  test-matrix:
+    # Test on multiple Python versions to ensure compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 2.3.3
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install --with test --no-interaction
+
+      - name: Run tests
+        run: |
+          poetry run pytest tests/ -v \
+            --cov=src \
+            --cov-fail-under=80 \
+            -m "not manual"
+        env:
+          TESTCONTAINERS_WAIT_TIMEOUT: "300"
+
+      - name: Test result summary
+        if: always()
+        run: |
+          echo "Python ${{ matrix.python-version }}: Tests completed" >> $GITHUB_STEP_SUMMARY

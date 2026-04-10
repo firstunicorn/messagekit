@@ -1,0 +1,119 @@
+name: Linters
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 2.3.3
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-lint-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        run: poetry install --with test --no-interaction
+
+      - name: Run ruff
+        run: |
+          echo "::group::Ruff Check"
+          poetry run ruff check src/ tests/
+          echo "::endgroup::"
+
+      - name: Run isort
+        run: |
+          echo "::group::isort Check"
+          poetry run isort --check-only src/ tests/
+          echo "::endgroup::"
+
+      - name: Run mypy
+        run: |
+          echo "::group::mypy Type Check"
+          poetry run mypy src/
+          echo "::endgroup::"
+
+      - name: Run flake8
+        run: |
+          echo "::group::flake8"
+          poetry run flake8 src/ tests/
+          echo "::endgroup::"
+
+      - name: Run pylint
+        run: |
+          echo "::group::pylint"
+          poetry run pylint src/ --exit-zero
+          echo "::endgroup::"
+
+      - name: Run bandit
+        run: |
+          echo "::group::bandit Security Check"
+          poetry run bandit -r src/ -ll
+          echo "::endgroup::"
+
+      - name: Run deptry
+        run: |
+          echo "::group::deptry Dependency Check"
+          poetry run deptry src/
+          echo "::endgroup::"
+
+      - name: Run vulture
+        run: |
+          echo "::group::vulture Dead Code Check"
+          poetry run vulture src/ tests/ --exclude .venv --min-confidence 80
+          echo "::endgroup::"
+
+      - name: Run radon
+        run: |
+          echo "::group::radon Complexity Check"
+          poetry run radon cc src/ -a -nb
+          echo "::endgroup::"
+
+      - name: Run interrogate
+        run: |
+          echo "::group::interrogate Docstring Check"
+          poetry run interrogate src/ -vv
+          echo "::endgroup::"
+
+      - name: Run import-linter
+        run: |
+          echo "::group::import-linter"
+          poetry run lint-imports
+          echo "::endgroup::"
+
+      - name: Run safety check
+        run: |
+          echo "::group::safety Security Check"
+          poetry run safety check --json || echo "Safety check completed with warnings"
+          echo "::endgroup::"
+
+      - name: Lint summary
+        if: always()
+        run: |
+          echo "### Linter Results ✨" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All code quality checks completed." >> $GITHUB_STEP_SUMMARY
+          echo "See logs above for details." >> $GITHUB_STEP_SUMMARY
