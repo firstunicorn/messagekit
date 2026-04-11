@@ -12,13 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    services:
-      # These services run alongside the job
-      # Testcontainers will use the Docker daemon
-      docker:
-        image: docker:dind
-        options: --privileged
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -107,12 +100,6 @@ jobs:
     # Test on multiple Python versions to ensure compatibility
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
-    services:
-      # Docker daemon for testcontainers
-      docker:
-        image: docker:dind
-        options: --privileged
     
     strategy:
       matrix:
