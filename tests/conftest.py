@@ -341,8 +341,10 @@ async def async_client_with_kafka(
         f":{rabbitmq_container.get_exposed_port(rabbitmq_container.port)}//"
     )
 
-    monkeypatch.setenv("KAFKA_BOOTSTRAP_SERVERS", kafka_bootstrap)
-    monkeypatch.setenv("RABBITMQ_URL", rabbitmq_url)
+    from messaging.config import settings as app_settings
+
+    monkeypatch.setattr(app_settings, "kafka_bootstrap_servers", kafka_bootstrap)
+    monkeypatch.setattr(app_settings, "rabbitmq_url", rabbitmq_url)
 
     app = create_app()
 
