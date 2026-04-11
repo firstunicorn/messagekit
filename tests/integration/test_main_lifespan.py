@@ -22,5 +22,5 @@ async def test_lifespan_initializes_rabbit_broker(
     assert hasattr(app.state, "rabbit_publisher")
     assert app.state.rabbit_broker is not None
     assert app.state.rabbit_publisher is not None
-    assert hasattr(app.state, "kafka_broker")
-    assert app.state.kafka_broker is not None
+    assert hasattr(app.state, "broker")
+    assert app.state.broker is not None

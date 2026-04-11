@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from faststream.rabbit import RabbitBroker
+from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange
 
 from messaging.core.contracts.base_event import BaseEvent
 
@@ -13,7 +13,7 @@ class RabbitEventPublisher:
     def __init__(
         self,
         broker: RabbitBroker,
-        default_exchange: str = "events",
+        default_exchange: str | RabbitExchange = "events",
     ) -> None:
         """Initialize RabbitMQ publisher.
 
@@ -22,7 +22,12 @@ class RabbitEventPublisher:
             default_exchange: Default exchange for publishing events.
         """
         self._broker = broker
-        self._default_exchange = default_exchange
+        if isinstance(default_exchange, str):
+            self._default_exchange = RabbitExchange(
+                default_exchange, type=ExchangeType.TOPIC, durable=True
+            )
+        else:
+            self._default_exchange = default_exchange
 
     async def publish_to_exchange(
         self,
