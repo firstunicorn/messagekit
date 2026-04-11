@@ -71,16 +71,18 @@ async def test_postgres_and_kafka_testcontainers_support_eventing_smoke(
             # Publish message first to auto-create topic, then subscribe
             # Kafka broker needs topic to exist before consumer can subscribe
             await publisher.publish(TEST_MESSAGE)
-            
+
             # Wait for topic creation to complete
             await asyncio.sleep(2)
 
-            consumer = Consumer({
-                "bootstrap.servers": bootstrap_servers,
-                "group.id": f"eventing-test-{uuid4()}",
-                "auto.offset.reset": "earliest",
-                "enable.auto.commit": False,
-            })
+            consumer = Consumer(
+                {
+                    "bootstrap.servers": bootstrap_servers,
+                    "group.id": f"eventing-test-{uuid4()}",
+                    "auto.offset.reset": "earliest",
+                    "enable.auto.commit": False,
+                }
+            )
             consumer.subscribe([TEST_TOPIC])
 
             await repository.add_event(ExampleEvent(xp_delta=15))

@@ -107,6 +107,13 @@ jobs:
     # Test on multiple Python versions to ensure compatibility
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    
+    services:
+      # Docker daemon for testcontainers
+      docker:
+        image: docker:dind
+        options: --privileged
+    
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12']
@@ -138,6 +145,7 @@ jobs:
             --cov-fail-under=80 \
             -m "not manual"
         env:
+          DOCKER_HOST: unix:///var/run/docker.sock
           TESTCONTAINERS_WAIT_TIMEOUT: "300"
 
       - name: Test result summary

@@ -247,7 +247,7 @@ def rabbitmq_container(docker_or_skip):
 
     Requires Docker to be running.
     Session-scoped for efficiency - container is reused across tests.
-    
+
     WINDOWS LIMITATION: This fixture is infrastructure-blocked on Windows due to
     Docker Desktop networking incompatibility with RabbitMQ AMQP protocol.
     Error: WinError 1225 "connection refused" or IncompatibleProtocolError.
@@ -262,19 +262,19 @@ def rabbitmq_container(docker_or_skip):
     # This resolves some testcontainers networking issues on Windows Docker Desktop
     # See: https://github.com/testcontainers/testcontainers-python/issues/407
     os.environ["TC_HOST"] = "localhost"
-    
+
     # Set testcontainers wait timeout to 5 minutes for slow image pulls
     # This affects the @wait_container_is_ready decorator timeout
     os.environ["TESTCONTAINERS_WAIT_TIMEOUT"] = "300"
-    
+
     # Use custom credentials instead of guest/guest to avoid localhost-only restriction
     # RabbitMQ's guest user is restricted to localhost connections only
     rabbitmq = RabbitMqContainer(
         "rabbitmq:3-management",
         username="testuser",
-        password="testpass",
+        password="testpass",  # noqa: S106 # Test credentials, not production
     )
-    
+
     with rabbitmq:
         # Container's built-in wait strategy checks connection readiness
         # Additional sleep ensures broker is fully initialized and accepting connections
