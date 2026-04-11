@@ -52,21 +52,7 @@ class TestKafkaRabbitMQBridge:
         import aio_pika
         from confluent_kafka import Producer
 
-        # Publish to Kafka
-        producer_config = {
-            "bootstrap.servers": kafka_container.get_bootstrap_server(),
-        }
-        producer = Producer(producer_config)
-
-        test_message = {"event_id": "bridge-test-2", "event_type": "user.created"}
-        producer.produce(
-            "events",
-            key=b"user-123",
-            value=json.dumps(test_message).encode(),
-        )
-        producer.flush()
-
-        # Connect to RabbitMQ and verify message arrived
+        # Connect to RabbitMQ and setup queue BEFORE publishing to Kafka
         rabbitmq_url = (
             f"amqp://{rabbitmq_container.username}:{rabbitmq_container.password}"
             f"@{rabbitmq_container.get_container_host_ip()}"
@@ -80,6 +66,20 @@ class TestKafkaRabbitMQBridge:
         exchange = await channel.declare_exchange("events", type="topic", durable=True)
         queue = await channel.declare_queue("test-queue", auto_delete=True)
         await queue.bind(exchange, routing_key="user.created")
+
+        # Publish to Kafka
+        producer_config = {
+            "bootstrap.servers": kafka_container.get_bootstrap_server(),
+        }
+        producer = Producer(producer_config)
+
+        test_message = {"event_id": "bridge-test-2", "event_type": "user.created"}
+        producer.produce(
+            "events",
+            key=b"user-123",
+            value=json.dumps(test_message).encode(),
+        )
+        producer.flush()
 
         await asyncio.sleep(2)  # Give bridge time to process
 

@@ -16,7 +16,7 @@ async def test_lifespan_initializes_rabbit_broker(
     """Application lifespan creates and starts RabbitMQ broker."""
     # The async_client_with_kafka fixture already initializes the full app lifespan
     # including both Kafka and RabbitMQ brokers. We just need to verify state.
-    app = async_client_with_kafka._transport._app  # type: ignore[attr-defined]
+    app = async_client_with_kafka._transport.app  # type: ignore[attr-defined]
 
     assert hasattr(app.state, "rabbit_broker")
     assert hasattr(app.state, "rabbit_publisher")
@@ -24,4 +24,3 @@ async def test_lifespan_initializes_rabbit_broker(
     assert app.state.rabbit_publisher is not None
     assert hasattr(app.state, "kafka_broker")
     assert app.state.kafka_broker is not None
-
