@@ -50,7 +50,7 @@ class TestRabbitEventPublisher:
 
         mock_broker.publish.assert_called_once_with(
             message=event,
-            exchange="default-events",
+            exchange=publisher._default_exchange,
             routing_key="order.placed",
         )
 

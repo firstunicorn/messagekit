@@ -353,7 +353,9 @@ async def async_client_with_kafka(
     app.state.session_factory = session_factory
 
     # Initialize lifespan with real brokers
-    async with app.router.lifespan_context(app):
+    async with app.router.lifespan_context(app) as state:
+        if state:
+            app.state._state.update(state)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             yield client

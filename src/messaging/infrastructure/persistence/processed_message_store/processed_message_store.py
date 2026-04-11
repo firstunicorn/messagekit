@@ -70,7 +70,7 @@ class SqlAlchemyProcessedMessageStore(IProcessedMessageStore):
             raise ValueError(msg)
 
         # Start transaction if not active (caller will commit/rollback later)
-        if not self._session.in_transaction():
+        if not self._session.in_nested_transaction() and not self._session.in_transaction():
             await self._session.begin()
 
         statement = build_claim_statement(

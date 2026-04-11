@@ -33,7 +33,7 @@ class RabbitEventPublisher:
         self,
         event: BaseEvent | dict[str, Any],
         routing_key: str,
-        exchange: str | None = None,
+        exchange: str | RabbitExchange | None = None,
     ) -> None:
         """Publish event to RabbitMQ exchange with routing key.
 

@@ -11,14 +11,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from messaging.config import settings
-from messaging.infrastructure import (
-    SqlAlchemyOutboxRepository,
-    SqlAlchemyProcessedMessageStore,
-    create_session_factory,
-)
+from messaging.infrastructure import SqlAlchemyOutboxRepository, create_session_factory
 from messaging.main._initialization import (
     attach_state_to_app,
-    initialize_bridge_consumer,
+    initialize_bridge_config,
     initialize_brokers_and_publishers,
     register_bridge_handler,
 )
@@ -56,20 +52,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.session_factory = session_factory
 
     repository = SqlAlchemyOutboxRepository(session_factory)
-    processed_message_store = SqlAlchemyProcessedMessageStore(session_factory)
 
     broker, rabbit_broker, rabbit_publisher = initialize_brokers_and_publishers()
-    bridge_config, bridge_consumer = initialize_bridge_consumer(
-        rabbit_publisher, processed_message_store
-    )
-    register_bridge_handler(broker, bridge_config, bridge_consumer)
+    bridge_config = initialize_bridge_config()
+    register_bridge_handler(broker, bridge_config, rabbit_publisher, session_factory)
     attach_state_to_app(
         app,
         broker,
         rabbit_broker,
         rabbit_publisher,
-        bridge_consumer,
-        processed_message_store,
         repository,
     )
 

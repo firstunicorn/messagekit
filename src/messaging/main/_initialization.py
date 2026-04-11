@@ -20,11 +20,13 @@ from messaging.infrastructure.pubsub.rabbit.publisher import RabbitEventPublishe
 from messaging.infrastructure.pubsub.rabbit_broker_config import create_rabbit_broker
 
 
-def initialize_brokers_and_publishers() -> tuple[
-    KafkaBroker,
-    RabbitBroker,
-    RabbitEventPublisher,
-]:
+def initialize_brokers_and_publishers() -> (
+    tuple[
+        KafkaBroker,
+        RabbitBroker,
+        RabbitEventPublisher,
+    ]
+):
     """Initialize Kafka and RabbitMQ brokers with publishers.
 
     Returns:
@@ -52,50 +54,45 @@ def initialize_brokers_and_publishers() -> tuple[
     return broker, rabbit_broker, rabbit_publisher
 
 
-def initialize_bridge_consumer(
-    rabbit_publisher: RabbitEventPublisher,
-    processed_message_store: SqlAlchemyProcessedMessageStore,
-) -> tuple[BridgeConfig, BridgeConsumer]:
-    """Initialize Kafka-to-RabbitMQ bridge consumer.
-
-    Args:
-        rabbit_publisher: RabbitMQ event publisher
-        processed_message_store: Store for idempotency tracking
+def initialize_bridge_config() -> BridgeConfig:
+    """Initialize Kafka-to-RabbitMQ bridge configuration.
 
     Returns:
-        Tuple of (bridge_config, bridge_consumer)
+        bridge_config: Bridge configuration
     """
-    bridge_config = BridgeConfig(
+    return BridgeConfig(
         kafka_topic="events",
         rabbitmq_exchange=settings.rabbitmq_exchange,
         routing_key_template="{event_type}",
     )
 
-    bridge_consumer = BridgeConsumer(
-        rabbit_publisher=rabbit_publisher,
-        processed_message_store=processed_message_store,
-        routing_key_template=bridge_config.routing_key_template,
-    )
-
-    return bridge_config, bridge_consumer
-
 
 def register_bridge_handler(
     broker: KafkaBroker,
     bridge_config: BridgeConfig,
-    bridge_consumer: BridgeConsumer,
+    rabbit_publisher: RabbitEventPublisher,
+    session_factory: Any,
 ) -> None:
     """Register bridge consumer as Kafka subscriber.
 
     Args:
         broker: Kafka broker
         bridge_config: Bridge configuration
-        bridge_consumer: Bridge consumer instance
+        rabbit_publisher: RabbitMQ publisher
+        session_factory: SQLAlchemy async session factory
     """
+
     @broker.subscriber(bridge_config.kafka_topic)
     async def handle_kafka_event(message: dict[str, Any]) -> None:
         """Bridge handler: consume from Kafka, forward to RabbitMQ."""
-        await bridge_consumer.handle_message(message)
+        async with session_factory() as session, session.begin():
+            store = SqlAlchemyProcessedMessageStore(session)
+            consumer = BridgeConsumer(
+                rabbit_publisher=rabbit_publisher,
+                processed_message_store=store,
+                routing_key_template=bridge_config.routing_key_template,
+            )
+            await consumer.handle_message(message)
 
 
 def attach_state_to_app(
@@ -103,8 +100,6 @@ def attach_state_to_app(
     broker: KafkaBroker,
     rabbit_broker: RabbitBroker,
     rabbit_publisher: RabbitEventPublisher,
-    bridge_consumer: BridgeConsumer,
-    processed_message_store: SqlAlchemyProcessedMessageStore,
     repository: SqlAlchemyOutboxRepository,
 ) -> None:
     """Attach all infrastructure instances to FastAPI app state.
@@ -114,8 +109,6 @@ def attach_state_to_app(
         broker: Kafka broker
         rabbit_broker: RabbitMQ broker
         rabbit_publisher: RabbitMQ publisher
-        bridge_consumer: Bridge consumer
-        processed_message_store: Processed message store
         repository: Outbox repository
     """
     event_bus = build_event_bus([])
@@ -123,8 +116,6 @@ def attach_state_to_app(
     app.state.broker = broker
     app.state.rabbit_broker = rabbit_broker
     app.state.rabbit_publisher = rabbit_publisher
-    app.state.bridge_consumer = bridge_consumer
-    app.state.processed_message_store = processed_message_store
     app.state.outbox_health_check = EventingHealthCheck(repository, broker)
     app.state.outbox_repository = repository
     app.state.event_bus = event_bus

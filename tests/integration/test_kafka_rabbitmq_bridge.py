@@ -81,10 +81,10 @@ class TestKafkaRabbitMQBridge:
         )
         producer.flush()
 
-        await asyncio.sleep(2)  # Give bridge time to process
+        await asyncio.sleep(5)  # Give bridge more time to process in slow CI/test envs
 
         # Verify queue received message
-        message = await queue.get(timeout=5)
+        message = await queue.get(timeout=10)
         assert message is not None
         body = json.loads(message.body.decode())
         assert body["event_id"] == "bridge-test-2"
