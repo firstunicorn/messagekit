@@ -1,3 +1,4 @@
+# ruff: noqa
 # Vulture whitelist for intentionally unused code
 # Each entry is scoped to specific files/functions to avoid false negatives elsewhere
 

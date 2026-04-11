@@ -24,10 +24,12 @@ async def test_publisher_raises_on_kafka_down(
 
     bootstrap = kafka.get_bootstrap_server()
 
-    producer = Producer({
-        "bootstrap.servers": bootstrap,
-        "client.id": "chaos-test-producer",
-    })
+    producer = Producer(
+        {
+            "bootstrap.servers": bootstrap,
+            "client.id": "chaos-test-producer",
+        }
+    )
 
     # Verify producer works initially
     topic = f"test-{uuid4()}"
@@ -45,4 +47,3 @@ async def test_publisher_raises_on_kafka_down(
     # >0 means delivery failed (expected when broker is down)
     remaining = producer.flush(timeout=10)
     assert remaining > 0, f"Expected flush to fail with messages remaining, got {remaining}"
-

@@ -24,7 +24,11 @@ def create_circuit_breaker_factory(
     Returns:
         Factory function that creates CircuitBreakerMiddleware with shared breaker.
     """
-    def circuit_breaker_factory(msg: Any = None, context: Any = None) -> CircuitBreakerMiddleware:  # noqa: ARG001
+
+    def circuit_breaker_factory(
+        msg: Any = None,  # noqa: ARG001
+        context: Any = None,  # noqa: ARG001
+    ) -> CircuitBreakerMiddleware:
         # Parameters required by FastStream middleware interface but unused
         middleware = CircuitBreakerMiddleware(
             failure_threshold=circuit_breaker_threshold,

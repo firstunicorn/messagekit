@@ -25,12 +25,14 @@ async def test_publisher_works_after_kafka_restart(
     bootstrap1 = kafka.get_bootstrap_server()
     topic = f"pub-recon-{uuid4()}"
 
-    consumer = Consumer({
-        "bootstrap.servers": bootstrap1,
-        "group.id": f"c-pub-recon-{uuid4()}",
-        "auto.offset.reset": "earliest",
-        "enable.auto.commit": False,
-    })
+    consumer = Consumer(
+        {
+            "bootstrap.servers": bootstrap1,
+            "group.id": f"c-pub-recon-{uuid4()}",
+            "auto.offset.reset": "earliest",
+            "enable.auto.commit": False,
+        }
+    )
     consumer.subscribe([topic])
 
     # Stop Kafka
@@ -46,18 +48,22 @@ async def test_publisher_works_after_kafka_restart(
     # Create new consumer and producer with restarted Kafka
     bootstrap2 = kafka.get_bootstrap_server()
 
-    consumer2 = Consumer({
-        "bootstrap.servers": bootstrap2,
-        "group.id": f"c-pub-recon2-{uuid4()}",
-        "auto.offset.reset": "earliest",
-        "enable.auto.commit": False,
-    })
+    consumer2 = Consumer(
+        {
+            "bootstrap.servers": bootstrap2,
+            "group.id": f"c-pub-recon2-{uuid4()}",
+            "auto.offset.reset": "earliest",
+            "enable.auto.commit": False,
+        }
+    )
     consumer2.subscribe([topic])
 
-    producer = Producer({
-        "bootstrap.servers": bootstrap2,
-        "client.id": "chaos-test-producer",
-    })
+    producer = Producer(
+        {
+            "bootstrap.servers": bootstrap2,
+            "client.id": "chaos-test-producer",
+        }
+    )
 
     try:
         # Produce message
@@ -85,4 +91,3 @@ async def test_publisher_works_after_kafka_restart(
     finally:
         consumer2.close()
         kafka.stop()
-

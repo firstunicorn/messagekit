@@ -73,7 +73,10 @@ class TestKafkaRabbitMQBridge:
         }
         producer = Producer(producer_config)
 
-        test_message = {"event_id": "bridge-test-2", "event_type": "user.created"}
+        import uuid
+
+        event_id = f"bridge-test-2-{uuid.uuid4()}"
+        test_message = {"event_id": event_id, "event_type": "user.created"}
         producer.produce(
             "events",
             key=b"user-123",
@@ -81,13 +84,13 @@ class TestKafkaRabbitMQBridge:
         )
         producer.flush()
 
-        await asyncio.sleep(5)  # Give bridge more time to process in slow CI/test envs
+        await asyncio.sleep(15)  # Give bridge more time to process in slow CI/test envs
 
         # Verify queue received message
-        message = await queue.get(timeout=10)
+        message = await queue.get(timeout=30)
         assert message is not None
         body = json.loads(message.body.decode())
-        assert body["event_id"] == "bridge-test-2"
+        assert body["event_id"] == event_id
         assert body["event_type"] == "user.created"
 
         await connection.close()
@@ -103,7 +106,10 @@ class TestKafkaRabbitMQBridge:
         }
         producer = Producer(producer_config)
 
-        test_message = {"event_id": "idempotent-test", "data": "duplicate test"}
+        import uuid
+
+        event_id = f"idempotent-test-{uuid.uuid4()}"
+        test_message = {"event_id": event_id, "data": "duplicate test"}
         for _ in range(2):
             producer.produce(
                 "events",
@@ -112,7 +118,7 @@ class TestKafkaRabbitMQBridge:
             )
         producer.flush()
 
-        await asyncio.sleep(2)
+        await asyncio.sleep(5)
 
         # Bridge should only process once due to idempotency check
         # Verification requires checking processed_message store

@@ -36,47 +36,51 @@ async def test_same_group_distributes_messages(
     group = f"group-shared-{uuid4()}"
 
     # Create topic first by producing initial message
-    producer_setup = Producer({
-        "bootstrap.servers": bootstrap,
-        "client.id": "setup-producer",
-    })
+    producer_setup = Producer(
+        {
+            "bootstrap.servers": bootstrap,
+            "client.id": "setup-producer",
+        }
+    )
     producer_setup.produce(topic, value=b"setup")
     producer_setup.flush(timeout=10)
 
     # Wait for topic creation to propagate
     await asyncio.sleep(5)
 
-    consumer1 = Consumer({
-        "bootstrap.servers": bootstrap,
-        "group.id": group,
-        "auto.offset.reset": "earliest",
-        "enable.auto.commit": True,
-    })
+    consumer1 = Consumer(
+        {
+            "bootstrap.servers": bootstrap,
+            "group.id": group,
+            "auto.offset.reset": "earliest",
+            "enable.auto.commit": True,
+        }
+    )
     consumer1.subscribe([topic])
 
-    consumer2 = Consumer({
-        "bootstrap.servers": bootstrap,
-        "group.id": group,
-        "auto.offset.reset": "earliest",
-        "enable.auto.commit": True,
-    })
+    consumer2 = Consumer(
+        {
+            "bootstrap.servers": bootstrap,
+            "group.id": group,
+            "auto.offset.reset": "earliest",
+            "enable.auto.commit": True,
+        }
+    )
     consumer2.subscribe([topic])
 
     await asyncio.sleep(5)  # Let consumers join group
 
-    producer = Producer({
-        "bootstrap.servers": bootstrap,
-        "client.id": "test-producer",
-    })
+    producer = Producer(
+        {
+            "bootstrap.servers": bootstrap,
+            "client.id": "test-producer",
+        }
+    )
 
     try:
         # Produce all 20 messages first (batched)
         for i in range(20):
-            producer.produce(
-                topic,
-                value=f"evt-{i}".encode(),
-                key=f"key-{i % 2}".encode()
-            )
+            producer.produce(topic, value=f"evt-{i}".encode(), key=f"key-{i % 2}".encode())
         producer.flush(timeout=10)
 
         # Give consumers time to process
@@ -107,7 +111,9 @@ async def test_same_group_distributes_messages(
                 break
 
         total = len(seen1) + len(seen2)
-        assert total >= 19, f"Expected at least 19 messages, got {total} (c1={len(seen1)}, c2={len(seen2)})"
+        assert (
+            total >= 19
+        ), f"Expected at least 19 messages, got {total} (c1={len(seen1)}, c2={len(seen2)})"
         assert not (seen1 & seen2), f"Same-group consumers got {len(seen1 & seen2)} duplicates"
 
     finally:

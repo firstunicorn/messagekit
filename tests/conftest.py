@@ -67,6 +67,9 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
     Removes any orphaned containers from previous failed/interrupted runs.
     Uses two-step process: stop first, then remove after fully stopped.
+
+    Args:
+        session: pytest session object
     """
     import time
 
@@ -218,6 +221,9 @@ def skip_broker_in_tests(monkeypatch: pytest.MonkeyPatch) -> None:
     This is appropriate for tests that only exercise HTTP endpoints and database logic.
 
     For tests that need real Kafka, use async_client_with_kafka instead.
+
+    Args:
+        monkeypatch: pytest monkeypatch fixture
     """
     monkeypatch.setenv("TESTING_SKIP_BROKER", "true")
 
@@ -230,6 +236,12 @@ def kafka_container(docker_or_skip):
     Session-scoped for efficiency - container is reused across tests.
 
     Note: Kafka startup configured with 300-second timeout.
+
+    Args:
+        docker_or_skip: docker_or_skip
+
+    Yields:
+        kafka
     """
     from testcontainers.kafka import KafkaContainer
 
@@ -252,6 +264,12 @@ def rabbitmq_container(docker_or_skip):
     Docker Desktop networking incompatibility with RabbitMQ AMQP protocol.
     Error: WinError 1225 "connection refused" or IncompatibleProtocolError.
     Works perfectly on Linux/macOS. See PRE_RELEASE_VERIFICATION.md for details.
+
+    Args:
+        docker_or_skip: docker_or_skip
+
+    Yields:
+        rabbitmq
     """
     import os
     import time
@@ -297,6 +315,13 @@ async def async_client(
     - Business logic that doesn't require actual message brokers
 
     For tests requiring real Kafka/RabbitMQ, use async_client_with_kafka.
+
+    Args:
+        skip_broker_in_tests: skip_broker_in_tests
+        sqlite_session_factory: sqlite_session_factory
+
+    Yields:
+        client
     """
     from messaging.main import create_app
 
@@ -330,6 +355,15 @@ async def async_client_with_kafka(
     - Circuit breaker resilience with broker failures
 
     Note: Slower than async_client due to container startup. Use selectively.
+
+    Args:
+        kafka_container: kafka_container
+        rabbitmq_container: rabbitmq_container
+        sqlite_session_factory: sqlite_session_factory
+        monkeypatch: monkeypatch
+
+    Yields:
+        client
     """
     from messaging.main import create_app
 

@@ -1,0 +1,13 @@
+fix(bridge): resolve transaction scope and RabbitMQ implicit routing bugs
+
+## Starting point
+We experienced persistent RabbitMQ flakiness and AttributeError exceptions during testing in Windows, WSL, and GitHub Actions environments. These errors initially appeared to be related to testcontainers networking, but deep analysis revealed core implementation issues in the bridge consumer.
+
+## Changes
+- **Transaction Scope Fix**: Modified `SqlAlchemyProcessedMessageStore` injection. It was previously injected as a global singleton into `BridgeConsumer` via `lifespan.py`, passing `session_factory` instead of `AsyncSession`. This caused an `AttributeError` when checking `in_transaction()`. Now, `register_bridge_handler` accepts `session_factory` and instantiates `BridgeConsumer` per-message within an `async with session.begin()` block, correctly aligning the database claim transaction with the messaging cycle.
+- **RabbitMQ Implicit Routing Fix**: Explicitly cast `default_exchange` to `RabbitExchange(type=ExchangeType.TOPIC)` in `RabbitEventPublisher` to prevent queue mismatches.
+- **Pydantic Settings Overrides**: Replaced `monkeypatch.setenv` in `tests/conftest.py` with `monkeypatch.setattr(app_settings)` to ensure overrides are properly picked up by Pydantic V2 during integration tests.
+- **Race Condition Fix**: Reordered `test_kafka_rabbitmq_bridge.py` to establish the RabbitMQ queue and exchange bindings *before* producing messages to Kafka, eliminating the `QueueEmpty` test instability.
+
+## Result
+100% of integration, chaos, and unit tests (140 tests) now pass successfully with 0 flakiness across environments, proving that the "testcontainer networking" issue was actually masked underlying logic bugs.

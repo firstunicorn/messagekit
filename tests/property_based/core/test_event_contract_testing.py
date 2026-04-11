@@ -27,9 +27,8 @@ class TestEventContractTesting:
         event_major, event_minor = int(event_parts[0]), int(event_parts[1])
         consumer_major, consumer_minor = int(consumer_parts[0]), int(consumer_parts[1])
 
-        incompatible = (
-            event_major > consumer_major
-            or (event_major == consumer_major and event_minor > consumer_minor)
+        incompatible = (event_major > consumer_major) or (
+            event_major == consumer_major and event_minor > consumer_minor
         )
 
         if incompatible:

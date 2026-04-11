@@ -10,8 +10,14 @@ class ContractViolationError(Exception):
 def check_version_compatibility(event_version: str, consumer_max_version: str) -> None:
     """Check if event version is compatible with consumer's max version.
 
-    Raises ContractViolationError if event version is incompatible.
     Uses semantic versioning: event version must not exceed consumer's max version.
+
+    Args:
+        event_version: Semantic version of the incoming event
+        consumer_max_version: Maximum supported semantic version
+
+    Raises:
+        ContractViolationError: If event version is incompatible
     """
     event_parts = event_version.split(".")
     consumer_parts = consumer_max_version.split(".")

@@ -1,4 +1,6 @@
+# ruff: noqa
 """Fix script for pydocstyle D405 'See also' capitalization and other automated fixes."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent  # .cursor/ -> eventing/

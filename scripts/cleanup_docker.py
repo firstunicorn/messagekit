@@ -1,3 +1,4 @@
+# ruff: noqa
 """Cleanup stale Docker containers before test runs.
 
 This script removes all testcontainers to prevent Docker daemon overload.
@@ -20,15 +21,15 @@ import structlog
 
 def cleanup_testcontainers() -> int:
     """Remove all testcontainers using two-step process.
-    
+
     Step 1: Stop all running testcontainers
     Step 2: Remove stopped testcontainers
-    
+
     Returns:
         0 if successful, 1 if failed or Docker unavailable.
     """
     logger = structlog.get_logger()
-    
+
     try:
         # Find all testcontainers (safe - only testcontainers-labeled)
         result = subprocess.run(
@@ -43,13 +44,13 @@ def cleanup_testcontainers() -> int:
             logger.error("Docker not available", stderr=result.stderr)
             return 1
 
-        container_ids = [cid.strip() for cid in result.stdout.strip().split('\n') if cid.strip()]
-        
+        container_ids = [cid.strip() for cid in result.stdout.strip().split("\n") if cid.strip()]
+
         if not container_ids:
             logger.info("No testcontainers to clean up")
         else:
             logger.info("Found testcontainers to clean", count=len(container_ids))
-            
+
             # Step 1: Stop running containers first
             subprocess.run(
                 ["docker", "stop", *container_ids],
@@ -59,7 +60,7 @@ def cleanup_testcontainers() -> int:
             )
             logger.info("Stopped containers, waiting for full shutdown")
             time.sleep(2)  # Wait for containers to fully stop
-            
+
             # Step 2: Remove stopped containers
             result = subprocess.run(
                 ["docker", "rm", *container_ids],
@@ -68,7 +69,7 @@ def cleanup_testcontainers() -> int:
                 timeout=30,
                 check=False,
             )
-            
+
             if result.returncode == 0:
                 logger.info("Testcontainers cleanup complete", removed=len(container_ids))
             else:
@@ -90,10 +91,7 @@ def cleanup_testcontainers() -> int:
         return 0
 
     except subprocess.TimeoutExpired:
-        logger.error(
-            "Docker cleanup timed out",
-            suggestion="Restart Docker Desktop"
-        )
+        logger.error("Docker cleanup timed out", suggestion="Restart Docker Desktop")
         return 1
     except Exception as e:
         logger.error("Docker cleanup failed", error=str(e))

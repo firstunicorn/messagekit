@@ -45,6 +45,12 @@ class OutboxReplayService:
     ) -> int:
         """Replay events matching criteria by republishing to Kafka.
 
+        Args:
+            event_type: Optional event type filter
+            from_ts: Start time for replay
+            to_ts: End time for replay
+            limit: Maximum number of events to replay
+
         Returns:
             Number of events republished
         """

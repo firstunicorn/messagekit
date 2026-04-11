@@ -58,7 +58,7 @@ def initialize_bridge_config() -> BridgeConfig:
     """Initialize Kafka-to-RabbitMQ bridge configuration.
 
     Returns:
-        bridge_config: Bridge configuration
+        BridgeConfig: Bridge configuration
     """
     return BridgeConfig(
         kafka_topic="events",
