@@ -8,16 +8,15 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from messaging.infrastructure.persistence.orm_models.orm_base import Base
 
+# LINTER EXCLUSION (PF002): Suppressed in setup.cfg for this file
+# RATIONALE: This is a SQLAlchemy ORM model using Mapped[] syntax, NOT a Pydantic model.
+#            mapped_column(default=...) is SQLAlchemy's column default syntax.
+#            Pydantic's Field() is incompatible with SQLAlchemy's declarative base.
+#            flake8-pydantic incorrectly flags SQLAlchemy Mapped[] defaults as violations.
+
 
 class FailedKafkaMessage(Base):
-    """Failed Kafka message stored in DLQ.
-
-    LINTER NOTE (PF002): flake8-pydantic warnings suppressed in setup.cfg for this file.
-    RATIONALE: This is a SQLAlchemy ORM model using Mapped[] syntax, NOT a Pydantic model.
-               mapped_column(default=...) is SQLAlchemy's column default syntax.
-               Pydantic's Field() is incompatible with SQLAlchemy's declarative base.
-               The PF002 check incorrectly flags SQLAlchemy defaults as Pydantic violations.
-    """
+    """Failed Kafka message stored in DLQ."""
 
     __tablename__ = "failed_kafka_messages"
 

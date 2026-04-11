@@ -82,35 +82,34 @@ def register_bridge_handler(
         session_factory: SQLAlchemy async session factory
     """
 
+    # CRITICAL BUG FIX: Per-message session and transaction scope
+    #
+    # BUG HISTORY: Original implementation had SqlAlchemyProcessedMessageStore as singleton
+    #              initialized once in lifespan with session_factory instead of AsyncSession.
+    #
+    # ROOT CAUSE: SqlAlchemyProcessedMessageStore.__init__ expects AsyncSession, not sessionmaker.
+    #             Using sessionmaker caused: AttributeError: 'async_sessionmaker' object has no
+    #             attribute 'in_transaction'. This broke idempotency checks completely.
+    #
+    # SOLUTION: Instantiate BridgeConsumer and SqlAlchemyProcessedMessageStore PER MESSAGE
+    #           within session context manager. This ensures:
+    #           1. Each message gets fresh AsyncSession instance (not factory)
+    #           2. Transaction scope is atomic: claim → publish → commit/rollback
+    #           3. Database connection lifecycle properly managed (no leaks)
+    #           4. Idempotency enforced at message level, not globally
+    #
+    # WHY session.begin(): Idempotency claim (INSERT...ON CONFLICT) and RabbitMQ publish
+    #                      must be atomic. If publish fails, claim rolls back and message
+    #                      can be reprocessed. Without begin(), autocommit would claim message
+    #                      even if RabbitMQ publish fails, causing message loss.
+    #
+    # WHY combined `with`: Ruff SIM117 requires combining nested async context managers.
+    #                      `async with session_factory() as session, session.begin():`
+    #                      is equivalent to nested `async with` but satisfies SIM117.
+
     @broker.subscriber(bridge_config.kafka_topic)
     async def handle_kafka_event(message: dict[str, Any]) -> None:
         """Bridge handler: consume from Kafka, forward to RabbitMQ.
-
-        CRITICAL BUG FIX: Per-message session and transaction scope
-
-        BUG HISTORY: Original implementation had SqlAlchemyProcessedMessageStore as a singleton
-                     initialized once in lifespan with session_factory instead of AsyncSession.
-
-        ROOT CAUSE: SqlAlchemyProcessedMessageStore.__init__ expects AsyncSession, not sessionmaker.
-                    Using sessionmaker caused: AttributeError: 'async_sessionmaker' object has no
-                    attribute 'in_transaction'. This broke idempotency checks completely.
-
-        SOLUTION: Instantiate BridgeConsumer and SqlAlchemyProcessedMessageStore PER MESSAGE
-                  within a session context manager. This ensures:
-                  1. Each message gets a fresh AsyncSession instance (not a factory)
-                  2. Transaction scope is atomic: claim → publish → commit/rollback
-                  3. Database connection lifecycle properly managed (no leaks)
-                  4. Idempotency is enforced at the message level, not globally
-
-        WHY session.begin(): The idempotency claim (INSERT...ON CONFLICT) and RabbitMQ publish
-                             must be atomic. If publish fails, the claim rolls back and the message
-                             can be reprocessed. Without begin(), autocommit would claim the message
-                             even if RabbitMQ publish fails, causing message loss.
-
-        WHY combined `with`: Ruff SIM117 requires combining nested async context managers.
-                             `async with session_factory() as session, session.begin():`
-                             is equivalent to nested `async with session_factory()` and
-                             `async with session.begin()` but satisfies SIM117.
 
         Args:
             message: Kafka message dict containing event_id and event_type

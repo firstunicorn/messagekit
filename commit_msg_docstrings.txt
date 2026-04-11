@@ -1,0 +1,46 @@
+refactor(docs): move bug histories and linter notes from docstrings to comments
+
+## Starting point: bug histories in docstrings
+
+Bug histories, linter exclusion notes, and implementation details were written
+in docstrings instead of comments. This causes Sphinx to include developer
+notes in generated API documentation.
+
+## Problem
+
+- Docstrings are parsed by Sphinx and become user-facing API docs
+- Bug histories are developer notes, not API documentation
+- Linter exclusion rationales clutter API docs
+- Generated documentation becomes unreadable for end users
+
+## Changes
+
+### 1. orm_models.py - moved linter note to comment
+- Moved PF002 exclusion rationale from class docstring to comment above class
+- Docstring now only contains brief description
+
+### 2. _initialization.py - moved bug history to comment
+- Moved extensive bug history (25 lines) from handle_kafka_event docstring to comment
+- Docstring now only contains brief description and Args section
+- Bug history comment placed above nested function where it's relevant
+
+### 3. Other files already correct
+- publisher.py: bug histories already in comments
+- conftest.py: bug histories already in comments
+- test_kafka_rabbitmq_bridge.py: bug histories already in comments
+
+## Format
+
+**Docstrings** (for Sphinx API docs):
+- Brief description
+- Args/Returns/Raises sections only
+
+**Comments** (for developers):
+- Bug histories with BUG FIX, ISSUE, ROOT CAUSE, SOLUTION
+- Linter exclusion rationales with RATIONALE
+- Implementation decisions with WHY
+
+## Result
+
+Sphinx-generated docs will now be clean and user-focused.
+Developer notes remain comprehensive but in comments where they belong.
