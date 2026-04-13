@@ -24,8 +24,8 @@ from messaging.main._initialization import (
 class TestInitializeBrokersAndPublishers:
     """Unit tests for initialize_brokers_and_publishers function."""
 
-    @patch("messaging.infrastructure.pubsub.rabbit_broker_config.create_rabbit_broker")
-    @patch("messaging.infrastructure.create_kafka_broker")
+    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
     def test_returns_correct_types(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:
@@ -44,8 +44,8 @@ class TestInitializeBrokersAndPublishers:
         assert rabbit_broker is mock_rabbit_broker
         assert isinstance(rabbit_publisher, RabbitEventPublisher)
 
-    @patch("messaging.infrastructure.pubsub.rabbit_broker_config.create_rabbit_broker")
-    @patch("messaging.infrastructure.create_kafka_broker")
+    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
     def test_passes_settings_to_kafka_broker(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:
@@ -62,8 +62,8 @@ class TestInitializeBrokersAndPublishers:
         call_args = mock_create_kafka.call_args
         assert call_args[0][0] is settings  # First positional arg
 
-    @patch("messaging.infrastructure.pubsub.rabbit_broker_config.create_rabbit_broker")
-    @patch("messaging.infrastructure.create_kafka_broker")
+    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
     def test_passes_rate_limiter_settings(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:
@@ -87,8 +87,8 @@ class TestInitializeBrokersAndPublishers:
         assert "rate_limit_max_rate" in rabbit_kwargs
         assert "rate_limit_time_period" in rabbit_kwargs
 
-    @patch("messaging.infrastructure.pubsub.rabbit_broker_config.create_rabbit_broker")
-    @patch("messaging.infrastructure.create_kafka_broker")
+    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
     def test_rabbit_publisher_uses_correct_exchange(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:
@@ -147,6 +147,7 @@ class TestRegisterBridgeHandler:
         mock_broker = Mock(spec=KafkaBroker)
         mock_config = Mock(spec=BridgeConfig)
         mock_config.kafka_topic = "test-events"
+        mock_config.consumer_group_id = "test-consumer-group"
         mock_publisher = Mock(spec=RabbitEventPublisher)
         mock_session_factory = Mock()
 
@@ -157,7 +158,7 @@ class TestRegisterBridgeHandler:
 
         # Verify subscriber decorator called with manual ack policy and group_id
         mock_broker.subscriber.assert_called_once_with(
-            "test-events", ack_policy=AckPolicy.MANUAL, group_id="eventing-consumers"
+            "test-events", ack_policy=AckPolicy.MANUAL, group_id="test-consumer-group"
         )
 
     def test_handler_function_created(self) -> None:
