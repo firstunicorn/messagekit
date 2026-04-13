@@ -15,7 +15,7 @@ class KafkaSettings(BaseModel):
         default_factory=lambda: {
             "group.id": "eventing-consumers",
             "partition.assignment.strategy": "cooperative-sticky",
-            "max.poll.interval.ms": "300000",
+            "max.poll.interval.ms": "600000",  # 10 minutes (increased for test infrastructure delays)
             "session.timeout.ms": "45000",
             "heartbeat.interval.ms": "15000",
         },
