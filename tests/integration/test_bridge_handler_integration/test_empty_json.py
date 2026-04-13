@@ -24,13 +24,15 @@ class TestEmptyJSON:
         monkeypatch,
     ) -> None:
         """Test production handler gracefully handles empty JSON."""
-        kafka_bootstrap, _ = setup_test_containers_config(
+        kafka_bootstrap, _, consumer_group_id = setup_test_containers_config(
             kafka_container, rabbitmq_container, monkeypatch
         )
 
         _, async_session_factory = sqlite_session_factory
 
-        broker, rabbit_broker = initialize_production_bridge(async_session_factory)
+        broker, rabbit_broker = initialize_production_bridge(
+            async_session_factory, consumer_group_id=consumer_group_id
+        )
 
         async with broker, rabbit_broker:
             await broker.start()
