@@ -39,7 +39,7 @@ class TestExceptionNack:
 
         original_handle = bridge_module.BridgeConsumer.handle_message
 
-        async def exploding_handle(consumer_self: Any, message: dict[str, Any]) -> None:
+        async def exploding_handle(_consumer_self: Any, message: dict[str, Any]) -> None:
             raise RuntimeError("Forced exception for coverage")
 
         monkeypatch.setattr(bridge_module.BridgeConsumer, "handle_message", exploding_handle)
