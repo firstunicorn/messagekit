@@ -1,0 +1,1 @@
+"""FastStream integration behavior tests."""
