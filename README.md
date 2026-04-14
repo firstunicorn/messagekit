@@ -432,7 +432,7 @@ poetry run pytest
 - RabbitMQ integration tests fail due to Docker Desktop networking limitations
 
 **CI/CD (Recommended for complete coverage):**
-- GitHub Actions runs all 140 tests on Linux (100% pass rate)
+- GitHub Actions runs all 192 tests on Linux (100% pass rate)
 - Workflows configured in `.github/workflows/`
 - See `.github/workflows/README.md` for details
 
