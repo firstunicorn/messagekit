@@ -19,29 +19,29 @@ def setup_test_containers_config(
     kafka_container: KafkaContainer,
     rabbitmq_container: RabbitMqContainer,
     monkeypatch: pytest.MonkeyPatch,
-    kafka_topic: str = "events",  # NEW
+    kafka_topic: str = "events",
     exchange: str = "test-events",
     consumer_group_id: str = "eventing-consumers",
 ) -> tuple[str, str, str]:
     """Configure test containers with unique identifiers.
-    
+
     Returns:
         (kafka_bootstrap_url, rabbitmq_url, consumer_group_id)
     """
     kafka_bootstrap = kafka_container.get_bootstrap_server()
     rabbitmq_url = f"amqp://{rabbitmq_container.username}:..."
-    
+
     monkeypatch.setattr(app_settings, "kafka_bootstrap_servers", kafka_bootstrap)
     monkeypatch.setattr(app_settings, "rabbitmq_url", rabbitmq_url)
     monkeypatch.setattr(app_settings, "rabbitmq_exchange", exchange)
-    
+
     return kafka_bootstrap, rabbitmq_url, consumer_group_id
 
 
 def initialize_production_bridge(
     session_factory: Any,
     consumer_group_id: str = "eventing-consumers",
-    kafka_topic: str = "events",  # NEW
+    kafka_topic: str = "events",
 ) -> tuple[KafkaBroker, RabbitBroker]:
     """Initialize production bridge with configurable topic and consumer group."""
     broker, rabbit_broker, rabbit_publisher = initialize_brokers_and_publishers()
@@ -112,7 +112,7 @@ class TestMyFeature:
             exchange=f"test-events-my-feature-{uuid4()}",  # UNIQUE
             consumer_group_id=f"my-feature-test-{uuid4()}",  # UNIQUE
         )
-        
+
         # 2. Initialize bridge with unique topic and group
         _, async_session_factory = sqlite_session_factory
         broker, rabbit_broker = initialize_production_bridge(
@@ -120,12 +120,12 @@ class TestMyFeature:
             consumer_group_id=group_id,
             kafka_topic=f"events-my-feature-{uuid4()}",  # Pass through
         )
-        
+
         # 3. Use async context managers
         async with broker, rabbit_broker:
             await broker.start()
             await rabbit_broker.start()
-            
+
             # 4. Create unique RabbitMQ resources
             connection = await aio_pika.connect_robust(rabbitmq_url)
             channel = await connection.channel()
@@ -139,12 +139,12 @@ class TestMyFeature:
                 auto_delete=True
             )
             await queue.bind(exchange, routing_key="#")
-            
+
             # 5. Wait for infrastructure readiness
             await asyncio.sleep(5)
-            
+
             # ... test implementation ...
-            
+
             await connection.close()
 ```
 
