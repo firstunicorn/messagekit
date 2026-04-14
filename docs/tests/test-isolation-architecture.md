@@ -44,8 +44,9 @@ def setup_test_containers_config(
     kafka_container,
     rabbitmq_container,
     monkeypatch,
+    kafka_topic: str = "events",
     exchange: str = "test-events",
-    consumer_group_id: str = "eventing-consumers",  # NEW PARAMETER
+    consumer_group_id: str = "eventing-consumers",
 ) -> tuple[str, str, str]:  # Returns (kafka_url, rabbit_url, group_id)
     """Configure app settings with UNIQUE test identifiers."""
     # Monkeypatch settings with unique values
