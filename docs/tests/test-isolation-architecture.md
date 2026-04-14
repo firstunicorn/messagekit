@@ -5,9 +5,12 @@
 ## Critical rule
 
 Integration tests using shared infrastructure (Kafka, RabbitMQ) MUST use unique identifiers for:
-- Consumer group IDs (Kafka)
+- **Kafka topic names** (most critical - topics store messages)
+- Consumer group IDs (Kafka - tracks offsets)
 - Exchange names (RabbitMQ)  
 - Queue names (RabbitMQ)
+
+**Both Kafka topic AND consumer group must be unique per test**.
 
 Failure to isolate causes message cross-contamination between tests.
 
@@ -56,19 +59,21 @@ def setup_test_containers_config(
 @pytest.mark.integration
 class TestIdempotency:
     async def test_production_handler_idempotency(self, ...):
-        # Unique exchange AND consumer group
+        # Unique topic, exchange, AND consumer group
         kafka_bootstrap, rabbitmq_url, group_id = setup_test_containers_config(
             kafka_container, 
             rabbitmq_container, 
             monkeypatch,
+            kafka_topic="events-idempotency-test",  # UNIQUE TOPIC
             exchange="test-events-idempotency",  # Unique exchange
             consumer_group_id="idempotency-test-group"  # Unique consumer group
         )
         
-        # Initialize bridge with unique group_id
+        # Initialize bridge with unique topic and group_id
         broker, rabbit_broker = initialize_production_bridge(
             async_session_factory,
-            consumer_group_id=group_id
+            consumer_group_id=group_id,
+            kafka_topic="events-idempotency-test",  # Pass through
         )
 ```
 
@@ -113,6 +118,7 @@ def setup_test_containers_config(
     kafka_container,
     rabbitmq_container, 
     monkeypatch,
+    kafka_topic: str = "events",  # NEW
     exchange: str = "test-events",
     consumer_group_id: str = "eventing-consumers",
 ) -> tuple[str, str, str]:
@@ -126,8 +132,9 @@ def setup_test_containers_config(
 def initialize_production_bridge(
     session_factory,
     consumer_group_id: str = "eventing-consumers",
+    kafka_topic: str = "events",  # NEW
 ) -> tuple[KafkaBroker, RabbitBroker]:
-    """Initialize bridge with configurable consumer group."""
+    """Initialize bridge with configurable topic and consumer group."""
     pass
 ```
 
@@ -173,6 +180,7 @@ tests/integration/test_bridge_handler_integration/
 ## Critical checklist
 
 Before creating integration tests:
+- [ ] Unique kafka_topic per test (most critical)
 - [ ] Unique consumer_group_id per test
 - [ ] Unique exchange name per test  
 - [ ] Unique queue names (use uuid4())

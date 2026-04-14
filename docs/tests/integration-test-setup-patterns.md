@@ -19,6 +19,7 @@ def setup_test_containers_config(
     kafka_container: KafkaContainer,
     rabbitmq_container: RabbitMqContainer,
     monkeypatch: pytest.MonkeyPatch,
+    kafka_topic: str = "events",  # NEW
     exchange: str = "test-events",
     consumer_group_id: str = "eventing-consumers",
 ) -> tuple[str, str, str]:
@@ -40,10 +41,14 @@ def setup_test_containers_config(
 def initialize_production_bridge(
     session_factory: Any,
     consumer_group_id: str = "eventing-consumers",
+    kafka_topic: str = "events",  # NEW
 ) -> tuple[KafkaBroker, RabbitBroker]:
-    """Initialize production bridge with configurable consumer group."""
+    """Initialize production bridge with configurable topic and consumer group."""
     broker, rabbit_broker, rabbit_publisher = initialize_brokers_and_publishers()
-    bridge_config = initialize_bridge_config(consumer_group_id=consumer_group_id)
+    bridge_config = initialize_bridge_config(
+        consumer_group_id=consumer_group_id,
+        kafka_topic=kafka_topic,  # Pass through
+    )
     register_bridge_handler(broker, bridge_config, rabbit_publisher, session_factory)
     return broker, rabbit_broker
 ```
@@ -103,15 +108,17 @@ class TestMyFeature:
             kafka_container,
             rabbitmq_container,
             monkeypatch,
+            kafka_topic=f"events-my-feature-{uuid4()}",  # UNIQUE TOPIC
             exchange=f"test-events-my-feature-{uuid4()}",  # UNIQUE
             consumer_group_id=f"my-feature-test-{uuid4()}",  # UNIQUE
         )
         
-        # 2. Initialize bridge with unique group
+        # 2. Initialize bridge with unique topic and group
         _, async_session_factory = sqlite_session_factory
         broker, rabbit_broker = initialize_production_bridge(
             async_session_factory,
-            consumer_group_id=group_id
+            consumer_group_id=group_id,
+            kafka_topic=f"events-my-feature-{uuid4()}",  # Pass through
         )
         
         # 3. Use async context managers
@@ -202,13 +209,14 @@ markers = [
 ## Pattern summary
 
 **DO**:
-- Generate unique IDs using uuid4() for exchanges, queues, consumer groups
-- Pass consumer_group_id through entire setup chain
+- Generate unique IDs using uuid4() for Kafka topics, exchanges, queues, consumer groups
+- Pass kafka_topic and consumer_group_id through entire setup chain
 - Use function-scoped sqlite for database isolation
 - Wait adequate time for async operations
 - Clean up connections explicitly
 
 **DON'T**:
+- Share Kafka topic names between tests
 - Share consumer group IDs between tests
 - Assume Kafka topic is clean
 - Rely on message ordering across tests

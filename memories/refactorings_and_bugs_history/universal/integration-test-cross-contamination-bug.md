@@ -189,6 +189,61 @@ async def test_handles_exception():
     )
 ```
 
+### 4. Ultimate solution: Unique Kafka topics
+
+Consumer group isolation still insufficient - needed unique topics per test.
+
+**Root cause**: All tests used same Kafka topic "events" even with unique consumer groups. Kafka topics store messages; consumer groups only track offsets. Multiple groups reading same topic see ALL messages.
+
+**Final fix** (commit a8c4f20):
+
+```python
+# Each test uses OWN Kafka topic
+test_idempotency.py → topic="events-idempotency-test"
+test_exception_nack.py → topic="events-exception-nack-test"
+test_empty_json.py → topic="events-empty-json-test"
+
+# Setup helper now accepts kafka_topic parameter
+def setup_test_containers_config(
+    kafka_container,
+    rabbitmq_container,
+    monkeypatch,
+    kafka_topic: str = "events",  # NEW
+    exchange: str = "test-events",
+    consumer_group_id: str = "test",
+) -> tuple[str, str, str]:
+    pass
+
+def initialize_production_bridge(
+    session_factory,
+    consumer_group_id: str = "test",
+    kafka_topic: str = "events",  # NEW
+) -> tuple[Any, Any]:
+    bridge_config = BridgeConfig(
+        kafka_topic=kafka_topic,  # Dynamic
+        consumer_group_id=consumer_group_id,
+    )
+```
+
+**Per-test usage**:
+```python
+# test_idempotency.py
+setup_test_containers_config(
+    kafka_topic="events-idempotency-test",  # UNIQUE TOPIC
+    consumer_group_id="idempotency-test-group",
+)
+producer.produce("events-idempotency-test", ...)  # Use unique topic
+
+# test_exception_nack.py  
+setup_test_containers_config(
+    kafka_topic="events-exception-nack-test",  # DIFFERENT TOPIC
+    consumer_group_id="exception-nack-test-group",
+)
+producer.produce("events-exception-nack-test", ...)  # Use unique topic
+```
+
+See: `2026-04-13-shared-kafka-topic-cross-contamination-bug.md` for full details.
+
 ## Files changed
 
 **Production code**:

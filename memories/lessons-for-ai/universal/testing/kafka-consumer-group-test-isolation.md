@@ -33,6 +33,26 @@ def test_my_scenario():
     )
 ```
 
+## CRITICAL: Consumer groups alone insufficient
+
+**You MUST also use unique Kafka topics per test**.
+
+Consumer group provides offset isolation but ALL groups reading same topic see ALL messages:
+
+```python
+# INCOMPLETE - only unique consumer group
+test_A: topic="events", consumer_group="test-a"  # Sees all messages in "events"
+test_B: topic="events", consumer_group="test-b"  # ALSO sees all messages in "events"
+
+# CORRECT - both unique
+test_A: topic="events-test-a", consumer_group="test-a"  # Isolated
+test_B: topic="events-test-b", consumer_group="test-b"  # Isolated
+```
+
+**Why**: Kafka topics store messages. Consumer groups only track offsets. Multiple groups reading same topic see same messages.
+
+See: kafka-topic-isolation-per-test.md for full pattern.
+
 ## Why shared groups fail
 
 Kafka consumer groups maintain **shared offset state**:
