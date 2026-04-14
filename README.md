@@ -428,7 +428,7 @@ poetry run pytest
 ### Testing
 
 **Local (Windows):**
-- Run non-RabbitMQ tests: `poetry run pytest tests/ -v -m "not requires_rabbitmq"` (135/135 pass)
+- Run non-RabbitMQ tests: `poetry run pytest tests/ -v -m "not requires_rabbitmq"`
 - RabbitMQ integration tests fail due to Docker Desktop networking limitations
 
 **CI/CD (Recommended for complete coverage):**
