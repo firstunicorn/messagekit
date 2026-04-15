@@ -18,7 +18,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
-    "autoapi.extension",
+    # "autoapi.extension",  # Disabled due to KeyError on eventing.config.settings
     "myst_parser",
     "sphinx_copybutton",
     "sphinx_llms_txt",
@@ -29,7 +29,13 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_title = project
 html_static_path: list[str] = []
-html_theme_options = {"top_of_page_buttons": []}
+html_theme_options = {
+    "top_of_page_buttons": [],
+    "navigation_with_keys": True,
+}
+
+# Furo theme automatically generates sidebar navigation from toctree
+# No need for explicit html_sidebars configuration
 
 autodoc_default_options = {
     "members": True,
@@ -46,7 +52,7 @@ autoapi_type = "python"
 autoapi_dirs = [str(SRC_DIR / "messaging")]
 autoapi_root = "autoapi"
 autoapi_add_toctree_entry = True
-autoapi_keep_files = True
+autoapi_keep_files = False  # Don't keep files to avoid stale references
 autoapi_member_order = "bysource"
 autoapi_python_use_implicit_namespaces = True
 autoapi_options = [
@@ -55,6 +61,7 @@ autoapi_options = [
     "show-inheritance",
     "show-module-summary",
 ]
+autoapi_ignore = ["*/conftest.py", "*/test_*.py"]  # Ignore test files
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False

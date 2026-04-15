@@ -13,6 +13,9 @@ gamification-specific reward rules or producer-specific business handlers.
 
 event-catalog
 integration-guide
+broker-selection-guide
+debezium-cdc-architecture
+kafka-rabbitmq-features
 cross-service-communication
 transactional-outbox
 dlq-handlers
