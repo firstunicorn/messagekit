@@ -1,0 +1,32 @@
+{
+  "test_name": "E2E Test V2 - Database-per-Service Pattern",
+  "start_time": "2026-04-14 23:27:13.530480+00:00",
+  "producer_db": "eventing-postgres:5432/producer_db",
+  "consumer_db": "eventing-postgres:5432/consumer_db",
+  "kafka": "localhost:9092 (main eventing-kafka)",
+  "steps": [
+    "Initialize services",
+    "Producer service started",
+    "Consumer service started",
+    "Emit event via EventBus",
+    "Verify outbox in producer_db",
+    "Publish to Kafka",
+    "Wait for consumer",
+    "Verify consumer processed event",
+    "Verify database isolation",
+    "Test idempotency"
+  ],
+  "success": true,
+  "errors": [],
+  "event_id": "59fc4a43-5f64-4a6d-9387-09022df781e7",
+  "event_type": "test.event_emitted_v2",
+  "producer_outbox_count": 1,
+  "consumer_received_count": 1,
+  "consumer_processed_count": 1,
+  "producer_db_isolated": true,
+  "consumer_db_isolated": true,
+  "idempotency_test_received": 1,
+  "idempotency_test_processed": 1,
+  "end_time": "2026-04-14 23:27:28.154171+00:00",
+  "duration_seconds": 14.623691
+}
