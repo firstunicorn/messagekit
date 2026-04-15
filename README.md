@@ -49,82 +49,110 @@ Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 
 📋 **[Event Catalog](https://python-eventing.readthedocs.io/en/latest/event-catalog.html)** - Available event types and contracts
 
-### Key Topics
+### Key topics
 
 - [Transactional Outbox Pattern](https://python-eventing.readthedocs.io/en/latest/transactional-outbox.html) - Guaranteed event delivery (PRIMARY)
+- [Cross-Service Communication](https://python-eventing.readthedocs.io/en/latest/cross-service-communication.html) - Database isolation, Kafka/RabbitMQ architecture, production deployment
 - [Idempotent Consumers](https://python-eventing.readthedocs.io/en/latest/consumer-transactions.html) - Duplicate message handling
 - [Health Checks](https://python-eventing.readthedocs.io/en/latest/autoapi/eventing/infrastructure/health/index.html) - Monitoring outbox and broker status
 
-**Architecture Note**: This package handles the **write side** of the outbox pattern (persisting events transactionally with business data). **Publishing** is delegated to Kafka Connect with Debezium CDC, which captures outbox table changes and publishes to Kafka. Dead letter handling leverages native broker mechanisms (RabbitMQ DLX, Kafka Connect DLQ SMT) with a minimal bookkeeping consumer to maintain database failed-event flags.
+**Architecture note**: This package handles the **write side** of the outbox pattern (persisting events transactionally with business data). **Publishing** is delegated to Kafka Connect with Debezium CDC, which captures outbox table changes and publishes to Kafka. The **bridge component** (part of standard architecture) forwards events from Kafka to RabbitMQ for services preferring AMQP. Dead letter handling leverages native broker mechanisms (RabbitMQ DLX, Kafka Connect DLQ SMT) with a minimal bookkeeping consumer to maintain database failed-event flags.
 
 ## Architecture
 
 ### Quick Overview
 
-
-
-- **Color-coded components:**
-
-- 🟢 Green: `python-eventing` components (Outbox, EventBus, Idempotent Consumer, DLQ Bookkeeper)
-
-- 🔵 Blue: External infrastructure (PostgreSQL, Kafka Connect, Kafka)
-
-- 🟠 Orange: FastStream adapter layer (KafkaBroker, Middleware)
+**Cross-service communication pattern:** Each microservice has its own PostgreSQL database (database-per-service). Services communicate via **Kafka** (shared event backbone) and **RabbitMQ** (dual-broker pattern via bridge).
 
 ```mermaid
 flowchart LR
-    subgraph FastStream["FastStream Broker Layer (Pythonic Adapter)"]
-        direction LR
-        Kafka([Apache Kafka])
-        RMQ([RabbitMQ])
+    subgraph Service_A["Service A (Producer)"]
+        AppA[FastAPI Route]
+        DB1[(PostgreSQL A<br/>outbox_events)]
     end
 
-    %% Main Flow
-    App[FastAPI Route]
-    DB1[(PostgreSQL Outbox)]
-    CDC[Kafka Connect CDC]
-    Handler1[Service B Handler]
-    DB2[(PostgreSQL Dedup)]
-    Handler2[Service C Handler]
-    DLQ([DLQ: Kafka SMT / RMQ DLX])
+    subgraph Infrastructure["Shared Infrastructure"]
+        CDC[Kafka Connect CDC]
+        Kafka([Apache Kafka<br/>Topic: events])
+        Bridge[Eventing Bridge<br/>Kafka → RabbitMQ]
+        RMQ([RabbitMQ<br/>Exchange: events])
+    end
 
-    %% Primary Path
-    App -->|1. Atomic Write| DB1
-    DB1 -.->|2. Async CDC| CDC
+    subgraph Service_B["Service B (Kafka Consumer)"]
+        Handler1[Event Handler]
+        DB2[(PostgreSQL B<br/>processed_messages)]
+    end
+
+    subgraph Service_C["Service C (RabbitMQ Consumer)"]
+        Handler2[Event Handler]
+        DB3[(PostgreSQL C<br/>processed_messages)]
+    end
+
+    DLQ([DLQ: Native Broker])
+
+    %% Primary Path (Kafka)
+    AppA -->|1. Atomic Write| DB1
+    DB1 -.->|2. CDC Monitor| CDC
     CDC -->|3. Publish| Kafka
-    Kafka -->|4. Consume| Handler1
+    Kafka -->|4. Subscribe| Handler1
     Handler1 -->|5. Dedup Check| DB2
 
-    %% Bridge Path
-    Kafka -.->|Bridge| RMQ
-    RMQ -.->|Consume| Handler2
+    %% Bridge Path (RabbitMQ)
+    Kafka -.->|6. Bridge Forward| Bridge
+    Bridge -->|7. Publish| RMQ
+    RMQ -.->|8. Subscribe| Handler2
+    Handler2 -->|9. Dedup Check| DB3
 
     %% Error Flow
     Handler1 -.->|Exception| DLQ
     Handler2 -.->|Exception| DLQ
-    DLQ -.->|Bookkeeper Updates| DB1
 
     %% Styling
     classDef app fill:#4CAF50,stroke:#2E7D32,color:#fff
     classDef db fill:#2196F3,stroke:#1565C0,color:#fff
     classDef broker fill:#FF9800,stroke:#E65100,color:#fff
-    classDef adapter fill:#9C27B0,stroke:#6A1B9A,color:#fff
+    classDef infra fill:#9C27B0,stroke:#6A1B9A,color:#fff
     classDef error fill:#F44336,stroke:#C62828,color:#fff
 
-    class App,Handler1,Handler2 app
-    class DB1,DB2 db
+    class AppA,Handler1,Handler2 app
+    class DB1,DB2,DB3 db
     class Kafka,RMQ broker
+    class CDC,Bridge infra
     class DLQ error
-    class FastStream adapter
 ```
 
+**Key points:**
 
+- Each service has **separate PostgreSQL database** (DB1, DB2, DB3)
+- **Kafka** is the shared event bus connecting all services
+- **Kafka Connect CDC** watches Service A's outbox and publishes to Kafka
+- **Service B** consumes directly from Kafka
+- **Bridge** forwards Kafka → RabbitMQ for services preferring AMQP
+- **Service C** consumes from RabbitMQ
+- Both Kafka and RabbitMQ are part of the **standard architecture**
 
 **Guarantees:**
 
-- **Write Phase**: ✅ Atomic (business data + event in same transaction)
+- **Write Phase**: ✅ Atomic (business data + event in same transaction, same database)
 - **Publish Phase**: ✅ At-least-once (CDC retries on failure)
-- **Consume Phase**: ✅ Exactly-once (idempotency via processed message store)
+- **Consume Phase**: ✅ Exactly-once (idempotency via processed message store in consumer's database)
+
+📖 **[Cross-Service Communication Guide](https://python-eventing.readthedocs.io/en/latest/cross-service-communication.html)** - Detailed explanation with production deployment patterns
+
+### Database isolation and event flow
+
+**Critical architecture principle:** Each service maintains its **own PostgreSQL database** (database-per-service pattern). Services do NOT directly access each other's databases. **Kafka acts as the shared event bus** connecting isolated services.
+
+**Complete event flow:**
+
+1. **Service A (Producer)** writes event to its own `outbox_events` table (in postgres-a)
+2. **Kafka Connect CDC** monitors Service A's outbox table via PostgreSQL WAL
+3. **CDC publishes** event to **Kafka topic** (shared infrastructure)
+4. **Service B (Consumer)** subscribes to **Kafka topic**, processes event, stores idempotency check in its own `processed_messages` table (in postgres-b)
+5. **Bridge Service** forwards events from **Kafka → RabbitMQ** (part of standard architecture)
+6. **Service C (Consumer)** subscribes to **RabbitMQ exchange**, processes event, stores idempotency check in its own `processed_messages` table (in postgres-c)
+
+**Result:** Services remain isolated (no shared database), communicate via Kafka, and maintain exactly-once processing guarantees via their own idempotency stores.
 
 ### Full Component Architecture
 
@@ -236,15 +264,16 @@ flowchart LR
                  │    │  │  • Legacy dict-based handling                │   │
                  │    │  │                                              │   │
                  │    │  │  Components:                                 │   │
-                 │    │  │  • EventRegistry (event type→class mapping)  │   │
-                 │    │  │  • SqlAlchemyProcessedMessageStore           │   │
-                 │    │  │    (implements IProcessedMessageStore)       │   │
-                 │    │  └──────────────────────────────────────────────┘   │
-                 │    │                                                      │
-                 │    │  ┌──────────────────────────────────────────────┐   │
-                 │    │  │  OPTIONAL COMPONENTS                         │   │
+                │    │  │  • EventRegistry (event type→class mapping)  │   │
+                │    │  │  • SqlAlchemyProcessedMessageStore           │   │
+                │    │  │    (implements IProcessedMessageStore)       │   │
+                │    │  └──────────────────────────────────────────────┘   │
+                │    │                                                      │
+                │    │  ┌──────────────────────────────────────────────┐   │
+                │    │  │  BRIDGE COMPONENT (Standard Architecture)    │   │
                 │    │  │  • BridgeConsumer (Kafka→RabbitMQ bridge)    │   │
                 │    │  │    (manual idempotency, not base class)      │   │
+                │    │  │  • Part of dual-broker event distribution    │   │
                 │    │  │                                              │   │
                 │    │  │  RabbitMQ Broker Middleware Stack:           │   │
                 │    │  │  • CircuitBreakerMiddleware (resilience)     │   │

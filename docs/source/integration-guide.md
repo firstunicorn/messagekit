@@ -3,6 +3,8 @@
 Use the `python-eventing` package when a domain service needs both local
 in-process dispatch and reliable cross-service publication.
 
+**For detailed cross-service architecture:** See {doc}`cross-service-communication` for database isolation patterns, Kafka/RabbitMQ architecture, and production deployment examples.
+
 ## Install the package
 
 Use a normal package dependency instead of a source checkout:

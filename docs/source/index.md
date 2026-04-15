@@ -13,6 +13,7 @@ gamification-specific reward rules or producer-specific business handlers.
 
 event-catalog
 integration-guide
+cross-service-communication
 transactional-outbox
 dlq-handlers
 consumer-transactions
