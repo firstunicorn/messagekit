@@ -41,7 +41,8 @@ class KafkaEventPublisher(IEventPublisher):
     is not critical for main application flow.
 
     See:
-    - FastStream autoflush: https://faststream.ag2.ai/latest/api/faststream/confluent/broker/broker/KafkaBroker/
+    - FastStream autoflush:
+      https://faststream.ag2.ai/latest/api/faststream/confluent/broker/broker/KafkaBroker/
     - E2E test pattern: scripts/tests/e2e_v2/producer_service_v2.py
     """
 
@@ -67,6 +68,10 @@ class KafkaEventPublisher(IEventPublisher):
         If autoflush=True, the underlying Kafka producer will flush after this call.
         Otherwise, messages are buffered for batching (better performance but no
         immediate delivery guarantee).
+
+        Args:
+            topic: Kafka topic name to publish to
+            message: Event message dictionary to publish
         """
         key = message.get("aggregateId") or message.get("aggregate_id")
         # FastStream Kafka requires bytes for partition keys
