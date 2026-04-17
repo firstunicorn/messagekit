@@ -61,7 +61,7 @@ class TestCircuitStateTransitions:
 
         test_event = BaseEvent(
             event_id=uuid4(),
-            event_type="test.event",
+            event_type="test.example.event",
             aggregate_id="test",
             occurred_at=datetime.now(UTC),
             source="chaos-test",

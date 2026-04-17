@@ -70,7 +70,7 @@ class TestDLQRetry:
 
             failed_event = OutboxEventRecord(
                 event_id=test_event_id,
-                event_type="test.event",
+                event_type="test.example.event",
                 aggregate_id="test-aggregate",
                 payload={"test": "data"},
                 occurred_at=datetime.now(UTC),

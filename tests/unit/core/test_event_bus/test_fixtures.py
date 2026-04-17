@@ -12,7 +12,7 @@ from python_domain_events import IDomainEventHandler
 class ExampleEvent(BaseEvent):
     """Concrete event for event-bus tests."""
 
-    event_type: str = "gamification.XPAwarded"
+    event_type: str = "gamification.xp.awarded"
     aggregate_id: str = "user-123"
     source: str = "gamification-service"
     xp_delta: int

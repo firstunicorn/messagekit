@@ -14,7 +14,7 @@ from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEve
 class ExampleEvent(BaseEvent):  # pylint: disable=too-many-ancestors
     """Concrete integration-test event."""
 
-    event_type: str = "gamification.XPAwarded"
+    event_type: str = "gamification.xp.awarded"
     aggregate_id: str = "user-123"
     source: str = "gamification-service"
     xp_delta: int

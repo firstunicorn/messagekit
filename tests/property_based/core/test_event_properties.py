@@ -11,7 +11,7 @@ from messaging.core.contracts import BaseEvent, EventEnvelopeFormatter, EventReg
 class ExampleEvent(BaseEvent):  # pylint: disable=too-many-ancestors
     """Concrete generated event used for property tests."""
 
-    event_type: str = "gamification.XPAwarded"
+    event_type: str = "gamification.xp.awarded"
     aggregate_id: str
     source: str
     xp_delta: int

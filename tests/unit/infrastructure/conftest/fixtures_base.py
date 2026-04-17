@@ -11,7 +11,7 @@ from python_outbox_core import IOutboxEvent
 class ExampleEvent(BaseEvent):  # pylint: disable=too-many-ancestors
     """Concrete test event for infrastructure behavior."""
 
-    event_type: str = "gamification.XPAwarded"
+    event_type: str = "gamification.xp.awarded"
     aggregate_id: str = "user-123"
     source: str = "gamification-service"
     xp_delta: int

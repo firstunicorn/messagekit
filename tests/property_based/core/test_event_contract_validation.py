@@ -47,7 +47,7 @@ def test_deserialize_accepts_valid_payload_with_extra_fields() -> None:
     registry.register(ExampleEvent)
 
     payload = {
-        "eventType": "gamification.XPAwarded",
+        "eventType": "gamification.xp.awarded",
         "aggregateId": "user-999",
         "source": "test-service",
         "timestamp": "2026-01-01T00:00:00+00:00",

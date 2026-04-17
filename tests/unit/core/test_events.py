@@ -20,7 +20,7 @@ from python_domain_events import IDomainEventHandler
 class ExampleEvent(BaseEvent):
     """Concrete test event used for contract verification."""
 
-    event_type: str = "gamification.XPAwarded"
+    event_type: str = "gamification.xp.awarded"
     aggregate_id: str = "user-123"
     source: str = "gamification-service"
     xp_delta: int
@@ -40,7 +40,7 @@ def test_base_event_serializes_with_camel_case() -> None:
     """Base events should emit JSON-ready payloads with aliases."""
     event = ExampleEvent(xp_delta=15)
 
-    assert event.to_message()["eventType"] == "gamification.XPAwarded"
+    assert event.to_message()["eventType"] == "gamification.xp.awarded"
     assert event.get_partition_key() == "user-123"
 
 
@@ -90,6 +90,6 @@ def test_event_envelope_formats_cloud_events() -> None:
     envelope = formatter.format(event)
 
     assert envelope["id"] == str(event.event_id)
-    assert envelope["type"] == "gamification.XPAwarded"
+    assert envelope["type"] == "gamification.xp.awarded"
     assert envelope["source"] == "gamification-service"
     assert envelope["data"]["xpDelta"] == 30
