@@ -1,8 +1,7 @@
 """Unit tests for EventCatalogManager."""
 
-from datetime import UTC, datetime
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -16,13 +15,13 @@ class TestEventCatalogManagerInit:
     def test_init_with_settings(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Manager initializes with provided settings."""
         monkeypatch.setenv("EVENT_CATALOG_REPO_URL", "https://github.com/org/catalog.git")
-        monkeypatch.setenv("EVENT_CATALOG_LOCAL_PATH", "/tmp/catalog")
+        monkeypatch.setenv("EVENT_CATALOG_LOCAL_PATH", "/tmp/catalog")  # noqa: S108
         settings = EventCatalogSettings()
 
         manager = EventCatalogManager(settings)
 
         assert manager.settings == settings
-        assert manager.local_path == Path("/tmp/catalog")
+        assert manager.local_path == Path("/tmp/catalog")  # noqa: S108
         assert manager._last_refresh is None
         assert manager._catalog_data is None
 
@@ -52,7 +51,7 @@ class TestEventCatalogManagerEnsureCatalog:
         manager = EventCatalogManager(settings)
 
         # Create empty TOML files after "clone"
-        def create_toml_files(*args, **kwargs):  # noqa: ARG001
+        def create_toml_files(*args, **kwargs):
             manager.local_path.mkdir(parents=True, exist_ok=True)
             (manager.local_path / "events.toml").write_text("")
             (manager.local_path / "services.toml").write_text("")

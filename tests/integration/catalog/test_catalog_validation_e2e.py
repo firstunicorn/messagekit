@@ -1,7 +1,6 @@
 """End-to-end integration tests for catalog validation."""
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 from pydantic import ValidationError

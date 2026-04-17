@@ -57,8 +57,8 @@ class EventCatalogManager:
         """Clone catalog repository to local path."""
         self.local_path.parent.mkdir(parents=True, exist_ok=True)
 
-        subprocess.run(
-            [
+        subprocess.run(  # noqa: S603
+            [  # noqa: S607
                 "git",
                 "clone",
                 "--depth",
@@ -76,8 +76,8 @@ class EventCatalogManager:
 
     async def _pull_catalog(self) -> None:
         """Pull latest changes from catalog repository."""
-        subprocess.run(
-            ["git", "pull"],
+        subprocess.run(  # noqa: S603
+            ["git", "pull"],  # noqa: S607
             cwd=str(self.local_path),
             check=True,
             shell=False,
