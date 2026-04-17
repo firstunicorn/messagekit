@@ -3,6 +3,7 @@
 import subprocess
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 try:
     import tomllib  # Python 3.11+
@@ -24,12 +25,13 @@ class EventCatalogManager:
         self.settings = settings
         self.local_path = Path(settings.local_path)
         self._last_refresh: datetime | None = None
-        self._catalog_data: dict | None = None
+        self._catalog_data: dict[str, Any] | None = None
 
-    async def ensure_catalog(self) -> dict | None:
+    async def ensure_catalog(self) -> dict[str, Any] | None:
         """Ensure catalog is cloned and up-to-date.
 
-        Returns catalog data dict or None if no catalog configured.
+        Returns:
+            Catalog data dict or None if no catalog configured
         """
         if self.settings.repo_url is None:
             return None
@@ -57,6 +59,8 @@ class EventCatalogManager:
         """Clone catalog repository to local path."""
         self.local_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # S603, S607: Safe subprocess call - uses list args (not shell=True),
+        # repo_url validated by Pydantic HttpUrl, git is trusted system binary
         subprocess.run(  # noqa: S603
             [  # noqa: S607
                 "git",
@@ -76,6 +80,8 @@ class EventCatalogManager:
 
     async def _pull_catalog(self) -> None:
         """Pull latest changes from catalog repository."""
+        # S603, S607: Safe subprocess call - uses list args (not shell=True),
+        # cwd is trusted (our own local_path), git is trusted system binary
         subprocess.run(  # noqa: S603
             ["git", "pull"],  # noqa: S607
             cwd=str(self.local_path),
@@ -97,13 +103,16 @@ class EventCatalogManager:
             ),
         }
 
-    def _load_toml(self, path: Path) -> dict:
+    def _load_toml(self, path: Path) -> dict[str, Any]:
         """Load TOML file."""
         with path.open("rb") as f:
             return tomllib.load(f)
 
     def validate_event_type(self, event_type: str) -> tuple[bool, str]:
         """Validate event type against catalog.
+
+        Args:
+            event_type: Event type to validate (e.g., "orders.order.created")
 
         Returns:
             (is_valid, message) tuple
@@ -134,6 +143,9 @@ class EventCatalogManager:
 
     def validate_service_name(self, service_name: str) -> tuple[bool, str]:
         """Validate service name against catalog.
+
+        Args:
+            service_name: Service name to validate (e.g., "order-service")
 
         Returns:
             (is_valid, message) tuple

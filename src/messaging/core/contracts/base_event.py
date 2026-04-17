@@ -52,11 +52,23 @@ class BaseEvent(IOutboxEvent, BaseDomainEvent):  # pylint: disable=too-many-ance
 
     @field_validator("event_type")
     @classmethod
-    def validate_event_type_format(cls, value: str) -> str:
+    def validate_event_type_format(cls, value: str) -> str:  # noqa: CCR001, RUF100
+        # CCR001 (flake8-cognitive-complexity): Two-layer validation (format + catalog)
+        # with async event loop detection. Splitting would scatter logic and reduce readability.
+        # RUF100: Ruff doesn't recognize CCR001 (flake8 plugin), but we need it for CI flake8.
         """Validate event type format and against catalog.
 
         Layer 1: Format validation (domain.entity.event pattern)
         Layer 2: Catalog validation (if catalog configured)
+
+        Args:
+            value: Event type to validate (e.g., "orders.order.created")
+
+        Returns:
+            Validated event type string
+
+        Raises:
+            ValueError: If event_type doesn't match format or catalog validation fails
         """
         # Layer 1: Format validation
         pattern = r"^[a-z]+\.[a-z-]+\.[a-z-]+$"
@@ -95,11 +107,23 @@ class BaseEvent(IOutboxEvent, BaseDomainEvent):  # pylint: disable=too-many-ance
 
     @field_validator("source")
     @classmethod
-    def validate_source_format(cls, value: str) -> str:
+    def validate_source_format(cls, value: str) -> str:  # noqa: CCR001, RUF100
+        # CCR001 (flake8-cognitive-complexity): Two-layer validation (format + catalog)
+        # with async event loop detection. Splitting would scatter logic and reduce readability.
+        # RUF100: Ruff doesn't recognize CCR001 (flake8 plugin), but we need it for CI flake8.
         """Validate source format and against catalog.
 
         Layer 1: Format validation (lowercase-with-hyphens pattern)
         Layer 2: Catalog validation (if catalog configured)
+
+        Args:
+            value: Service name to validate (e.g., "order-service")
+
+        Returns:
+            Validated service name string
+
+        Raises:
+            ValueError: If source doesn't match format or catalog validation fails
         """
         # Layer 1: Format validation
         pattern = r"^[a-z][a-z0-9-]*$"

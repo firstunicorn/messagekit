@@ -15,12 +15,14 @@ class TestEventCatalogManagerInit:
     def test_init_with_settings(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Manager initializes with provided settings."""
         monkeypatch.setenv("EVENT_CATALOG_REPO_URL", "https://github.com/org/catalog.git")
+        # S108: /tmp/catalog is test-only env var value, not actual file operation
         monkeypatch.setenv("EVENT_CATALOG_LOCAL_PATH", "/tmp/catalog")  # noqa: S108
         settings = EventCatalogSettings()
 
         manager = EventCatalogManager(settings)
 
         assert manager.settings == settings
+        # S108: /tmp/catalog is test assertion value, not actual file operation
         assert manager.local_path == Path("/tmp/catalog")  # noqa: S108
         assert manager._last_refresh is None
         assert manager._catalog_data is None
