@@ -21,10 +21,10 @@ from uuid import UUID, uuid4
 from pydantic import ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
 
-from python_domain_events import BaseDomainEvent
-from python_outbox_core import IOutboxEvent
 from messaging.catalog.manager import EventCatalogManager
 from messaging.config.event_catalog_settings import EventCatalogSettings
+from python_domain_events import BaseDomainEvent
+from python_outbox_core import IOutboxEvent
 
 logger = logging.getLogger(__name__)
 
