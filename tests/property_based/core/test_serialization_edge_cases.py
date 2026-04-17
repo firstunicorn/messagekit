@@ -21,8 +21,16 @@ _SAFE_TEXT = st.text(
     alphabet=st.characters(min_codepoint=48, max_codepoint=122), min_size=1, max_size=24
 )
 
+# Strategy for valid source strings: must start with lowercase letter,
+# followed by lowercase letters, numbers, or hyphens
+_VALID_SOURCE = st.text(
+    alphabet="abcdefghijklmnopqrstuvwxyz0123456789-",
+    min_size=1,
+    max_size=24,
+).filter(lambda s: s[0].islower() and s[0].isalpha())
 
-@given(_SAFE_TEXT, _SAFE_TEXT, st.integers(-10000, 10000))
+
+@given(_SAFE_TEXT, _VALID_SOURCE, st.integers(-10000, 10000))
 def test_round_trip_lossless_serialization(
     agg_id: str,
     source: str,
