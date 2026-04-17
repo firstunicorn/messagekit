@@ -1,0 +1,91 @@
+# Documentation standards
+
+## Critical rules
+
+### No internal references in public docs
+
+**Never reference internal development artifacts in user-facing documentation:**
+
+❌ **Never link to:**
+- `.cursor/plans/` files
+- Internal planning documents
+- Development task lists
+- Architecture decision records (ADRs) not meant for users
+
+✅ **Instead:**
+- Document the feature directly in user-facing docs
+- Include examples, configuration, and usage patterns inline
+- Reference only public documentation, standards, or external resources
+
+**Rationale:** Users should not see or care about internal planning. Documentation must be self-contained and focused on how to use the library, not how it was developed.
+
+### Example fixes
+
+❌ **Bad:**
+```markdown
+See the [event catalog plan](../.cursor/plans/event_catalog_configuration_and_format_validation_75949f01.plan.md) for detailed catalog structure and examples.
+```
+
+✅ **Good:**
+```markdown
+**Your organization's catalog repository structure:**
+
+This is the structure for your own centralized event catalog Git repository:
+
+\`\`\`
+your-event-catalog/
+├── events.toml      # Event registry
+├── services.toml    # Service registry
+└── schemas/         # Optional JSON Schemas
+    └── *.schema.json
+\`\`\`
+
+**Example `events.toml`:**
+\`\`\`toml
+[events."orders.order.created"]
+owner_service = "order-service"
+description = "Emitted when a new order is placed"
+\`\`\`
+```
+
+## Documentation ownership clarity
+
+### Library vs user artifacts
+
+Always clarify when something is:
+- **Part of the library** (included in the package)
+- **User's responsibility** (they create/maintain it)
+
+**Examples:**
+
+✅ **Clear ownership:**
+```markdown
+**Your organization's catalog repository structure:**
+
+This is the structure for your own centralized event catalog Git repository (not part of the `python-eventing` library):
+```
+
+❌ **Ambiguous:**
+```markdown
+**Catalog repository structure:**
+
+event-catalog/
+├── events.toml
+```
+
+## Documentation file locations
+
+- **User-facing docs:** `docs/source/*.md` (Sphinx documentation)
+- **Internal plans:** `.cursor/plans/*.plan.md` (never reference in docs)
+- **Contributing guides:** `docs/development/*.md` or `CONTRIBUTING.md`
+- **Architecture decisions:** `docs/architecture/*.md` (only if meant for users)
+
+## Checklist for documentation changes
+
+Before committing docs:
+- [ ] No references to `.cursor/plans/`
+- [ ] No references to internal task management
+- [ ] Clear ownership (library vs user artifacts)
+- [ ] Self-contained examples
+- [ ] All code examples are valid and tested
+- [ ] External references only to public standards/docs
