@@ -43,21 +43,6 @@ from messaging.infrastructure import SqlAlchemyOutboxRepository
 - PostgreSQL (outbox persistence)
 - Kafka Connect with Debezium CDC (publishing infrastructure)
 
-## When to use this package
-
-**Use `python-eventing` if you need:**
-- Guaranteed event delivery via transactional outbox pattern
-- Kafka-based microservice messaging with CDC publishing
-- Dead letter queue handling with database bookkeeping
-- Idempotent consumer patterns with durable deduplication
-- Native broker integration (FastStream, Debezium CDC, RabbitMQ DLX)
-
-**Consider alternatives if:**
-- Simple in-process events only → [`pyventus`](https://github.com/mdapena/pyventus)
-- FastAPI request-scoped events → [`fastapi-events`](https://github.com/melvinkcx/fastapi-events)
-- Non-Kafka message brokers without CDC support
-- No need for durable outbox persistence
-
 Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 
 ## Comparison with alternatives
@@ -82,6 +67,21 @@ Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 | Durable cross-service idempotency | ✅✅✅ | ❌ | ❌ | `IProcessedMessageStore` plus `SqlAlchemyProcessedMessageStore` provide transactional duplicate protection |
 | Consumer batch handling | ❌ | ❌ | ✅✅✅ | `fastapi-events` supports `handle_many(...)`; this package stays one-message-per-consume today |
 | FastAPI-local event flow | ❌ | ✅ | ✅✅✅ | This package intentionally avoids request-lifecycle middleware eventing |
+
+## When to use this package
+
+**Use `python-eventing` if you need:**
+- Guaranteed event delivery via transactional outbox pattern
+- Kafka-based microservice messaging with CDC publishing
+- Dead letter queue handling with database bookkeeping
+- Idempotent consumer patterns with durable deduplication
+- Native broker integration (FastStream, Debezium CDC, RabbitMQ DLX)
+
+**Consider alternatives if:**
+- Simple in-process events only → [`pyventus`](https://github.com/mdapena/pyventus)
+- FastAPI request-scoped events → [`fastapi-events`](https://github.com/melvinkcx/fastapi-events)
+- Non-Kafka message brokers without CDC support
+- No need for durable outbox persistence
 
 ## Scope
 
@@ -455,11 +455,11 @@ app = FastAPI()
 async def startup():
     # Database engine
     engine = create_async_engine("postgresql+asyncpg://...")
-    
+
     # Outbox repository
     outbox_repo = SqlAlchemyOutboxRepository(engine)
     app.state.outbox_repository = outbox_repo
-    
+
     # Optional: EventBus for advanced patterns
     event_bus = build_event_bus()
     app.state.event_bus = event_bus
@@ -585,4 +585,3 @@ poetry run pytest
 - See `.github/workflows/README.md` for details
 
 **For complete local test coverage on Windows:** See [Windows Testing with WSL2](docs/WINDOWS_TESTING_WITH_WSL2.md) (requires Docker Desktop WSL integration setup).
-
