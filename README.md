@@ -7,11 +7,62 @@
 [Code Style](https://github.com/astral-sh/ruff)
 [Validate Dependencies](https://github.com/firstunicorn/python-eventing/actions/workflows/validate-dependencies.yml)
 
+## Table of contents
+
+- [Installation](#installation)
+- [When to use this package](#when-to-use-this-package)
+- [Comparison with alternatives](#comparison-with-alternatives)
+- [Scope](#scope)
+- [Quick start: transactional outbox](#quick-start-transactional-outbox)
+- [Setup](#setup)
+- [Advanced: EventBus](#advanced-eventbus-optional)
+- [Documentation](#documentation)
+- [Local development](#local-development)
+
 Package-first universal event infrastructure for microservices.
 
 📚 **[Full Documentation](https://python-eventing.readthedocs.io/en/latest/)** - Comprehensive guides and API reference
 
+## Installation
+
+```bash
+pip install python-eventing
+# or
+poetry add python-eventing
+```
+
+**Import package name:** `messaging` (distribution is `python-eventing`)
+
+```python
+from messaging.core import BaseEvent
+from messaging.infrastructure import SqlAlchemyOutboxRepository
+```
+
+**Requirements:**
+- Python 3.12+
+- PostgreSQL (outbox persistence)
+- Kafka Connect with Debezium CDC (publishing infrastructure)
+
+## When to use this package
+
+**Use `python-eventing` if you need:**
+- Guaranteed event delivery via transactional outbox pattern
+- Kafka-based microservice messaging with CDC publishing
+- Dead letter queue handling with database bookkeeping
+- Idempotent consumer patterns with durable deduplication
+- Native broker integration (FastStream, Debezium CDC, RabbitMQ DLX)
+
+**Consider alternatives if:**
+- Simple in-process events only → [`pyventus`](https://github.com/mdapena/pyventus)
+- FastAPI request-scoped events → [`fastapi-events`](https://github.com/melvinkcx/fastapi-events)
+- Non-Kafka message brokers without CDC support
+- No need for durable outbox persistence
+
 Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
+
+## Comparison with alternatives
+
+`python-eventing` prioritizes **durable messaging** (transactional outbox + CDC) and **Kafka/RabbitMQ integration** over in-process event simplicity:
 
 | Capability | `python-eventing` | [`pyventus`](https://github.com/mdapena/pyventus) | [`fastapi-events`](https://github.com/melvinkcx/fastapi-events) | Notes |
 | --- | --- | --- | --- | --- |
@@ -34,12 +85,20 @@ Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 
 ## Scope
 
+**Included:**
 - Transactional outbox primitives (write-side only; CDC handles publishing)
 - Event contracts and registry
 - Kafka/RabbitMQ consumer base classes with idempotency
 - Native broker integration (Kafka Connect CDC, RabbitMQ DLX, FastStream middlewares)
 - In-process emitter/subscriber facade and hooks
 - DLQ bookkeeping consumer for database flag synchronization
+
+**NOT included (delegated to external systems):**
+- Event publishing (handled by Kafka Connect with Debezium CDC)
+- Message broker infrastructure setup (use official Kafka/RabbitMQ documentation)
+- Schema registry management (use Confluent Schema Registry or alternatives)
+- Request-scoped FastAPI event middleware (intentionally avoided)
+- Consumer batch handling (use `fastapi-events` if needed)
 
 ## Documentation
 
@@ -355,6 +414,59 @@ async def handle_user_created(event: UserCreatedEvent):  # ✅ Already a Pydanti
 
 `python-eventing` uses FastStream for all Kafka/RabbitMQ interactions, giving you a clean, Pythonic API while handling all the low-level complexity.
 
+## Setup
+
+### Database schema
+
+The outbox table stores events transactionally with your business data:
+
+```sql
+CREATE TABLE outbox_events (
+    event_id VARCHAR(36) PRIMARY KEY,
+    event_type VARCHAR(255) NOT NULL,
+    aggregate_id VARCHAR(255) NOT NULL,
+    payload JSONB NOT NULL,
+    occurred_at TIMESTAMPTZ NOT NULL,
+    published BOOLEAN DEFAULT FALSE NOT NULL,
+    failed BOOLEAN DEFAULT FALSE NOT NULL,
+    attempt_count INTEGER DEFAULT 0 NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    published_at TIMESTAMPTZ,
+    failed_at TIMESTAMPTZ,
+    error_message TEXT
+);
+
+CREATE INDEX idx_outbox_unpublished ON outbox_events (published, created_at);
+```
+
+### Application startup
+
+Initialize the outbox repository and event bus at application startup:
+
+```python
+from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import create_async_engine
+from messaging.infrastructure import SqlAlchemyOutboxRepository
+from messaging.core import build_event_bus
+
+app = FastAPI()
+
+@app.on_event("startup")
+async def startup():
+    # Database engine
+    engine = create_async_engine("postgresql+asyncpg://...")
+    
+    # Outbox repository
+    outbox_repo = SqlAlchemyOutboxRepository(engine)
+    app.state.outbox_repository = outbox_repo
+    
+    # Optional: EventBus for advanced patterns
+    event_bus = build_event_bus()
+    app.state.event_bus = event_bus
+```
+
+**CDC Publishing:** Kafka Connect with Debezium CDC automatically detects outbox table changes and publishes to Kafka. See [`debezium-cdc-architecture.md`](https://python-eventing.readthedocs.io/en/latest/debezium-cdc-architecture.html) for configuration.
+
 ## Quick Start: Transactional Outbox
 
 The **core pattern** is the transactional outbox - persist events atomically with your business data:
@@ -440,11 +552,18 @@ await event_bus.dispatch(UserCreated(...))
 ## Distribution
 
 - PyPI distribution name: `python-eventing`
-- Python import package: `eventing`
+- Python import package: `messaging`
 
-Services should consume the published package rather than a source checkout.
-Kafka remains shared infrastructure and each participating service uses
-local producer/consumer clients.
+```python
+# Install
+pip install python-eventing
+
+# Import
+from messaging.core import BaseEvent
+from messaging.infrastructure import SqlAlchemyOutboxRepository
+```
+
+Services should consume the published package rather than source checkout. Kafka remains shared infrastructure with local producer/consumer clients per service.
 
 ## Local development
 
