@@ -2,7 +2,7 @@
 
 from fastapi.routing import APIRoute
 
-from messaging.main import create_app
+from messagekit.main import create_app
 
 
 def test_create_app_sets_title_and_registers_routes() -> None:

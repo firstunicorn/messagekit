@@ -49,7 +49,7 @@ typehints_use_rtype = True
 typehints_defaults = "comma"
 
 autoapi_type = "python"
-autoapi_dirs = [str(SRC_DIR / "messaging")]
+autoapi_dirs = [str(SRC_DIR / "messagekit")]
 autoapi_root = "autoapi"
 autoapi_add_toctree_entry = True
 autoapi_keep_files = False  # Don't keep files to avoid stale references

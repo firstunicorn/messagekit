@@ -7,7 +7,7 @@ from typing import Any, cast
 import pytest
 from faststream.confluent import KafkaBroker
 
-from messaging.infrastructure.pubsub import KafkaEventPublisher
+from messagekit.infrastructure.pubsub import KafkaEventPublisher
 from tests.unit.infrastructure.conftest import FakeKafkaBroker, FakePublisher
 
 

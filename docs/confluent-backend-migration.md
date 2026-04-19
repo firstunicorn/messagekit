@@ -13,9 +13,9 @@
 
 ### Imports Updated
 Changed `from faststream.kafka` → `from faststream.confluent` in:
-- `src/messaging/infrastructure/pubsub/broker_config.py`
-- `src/messaging/infrastructure/pubsub/kafka_publisher.py`
-- `src/messaging/infrastructure/health/outbox_health_check.py`
+- `src/messagekit/infrastructure/pubsub/broker_config.py`
+- `src/messagekit/infrastructure/pubsub/kafka_publisher.py`
+- `src/messagekit/infrastructure/health/outbox_health_check.py`
 - `tests/unit/infrastructure/test_kafka_publisher.py`
 - `tests/unit/infrastructure/test_fake_broker_contract/test_signature_match.py`
 

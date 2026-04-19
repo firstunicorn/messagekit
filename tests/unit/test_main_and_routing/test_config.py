@@ -2,7 +2,7 @@
 
 import pytest
 
-from messaging.infrastructure.persistence.session import create_session_factory
+from messagekit.infrastructure.persistence.session import create_session_factory
 
 
 @pytest.mark.asyncio

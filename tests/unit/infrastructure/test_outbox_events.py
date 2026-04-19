@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from messaging.infrastructure.outbox import OutboxEventHandler
+from messagekit.infrastructure.outbox import OutboxEventHandler
 from tests.unit.infrastructure.conftest import ExampleEvent, FakeRepository
 
 

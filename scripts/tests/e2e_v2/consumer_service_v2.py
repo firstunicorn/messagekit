@@ -18,10 +18,10 @@ from sqlalchemy.ext.asyncio import (
 )
 from faststream.confluent import KafkaBroker
 
-from messaging.infrastructure.persistence.processed_message_store.processed_message_store import (
+from messagekit.infrastructure.persistence.processed_message_store.processed_message_store import (
     SqlAlchemyProcessedMessageStore,
 )
-from messaging.infrastructure.persistence.orm_models.processed_message_orm import ProcessedMessageRecord
+from messagekit.infrastructure.persistence.orm_models.processed_message_orm import ProcessedMessageRecord
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class ConsumerServiceV2:
         
         # Create tables
         logger.info("Creating database tables for consumer_db")
-        from messaging.infrastructure.persistence.orm_models.orm_base import Base
+        from messagekit.infrastructure.persistence.orm_models.orm_base import Base
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("✅ Tables created: processed_messages")

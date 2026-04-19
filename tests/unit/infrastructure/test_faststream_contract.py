@@ -8,11 +8,11 @@ import inspect
 
 from faststream import BaseMiddleware
 
-from messaging.infrastructure.pubsub.broker_config._factory_helpers import (
+from messagekit.infrastructure.pubsub.broker_config._factory_helpers import (
     create_circuit_breaker_factory,
 )
-from messaging.infrastructure.resilience.circuit_breaker_middleware import CircuitBreakerMiddleware
-from messaging.infrastructure.resilience.rate_limiter_middleware import RateLimiterMiddleware
+from messagekit.infrastructure.resilience.circuit_breaker_middleware import CircuitBreakerMiddleware
+from messagekit.infrastructure.resilience.rate_limiter_middleware import RateLimiterMiddleware
 
 
 def test_middleware_factory_returns_correct_signature() -> None:
@@ -20,7 +20,7 @@ def test_middleware_factory_returns_correct_signature() -> None:
 
     FastStream requires middleware factories with exact (msg, context) signature.
     """
-    from messaging.core.contracts.circuit_breaker import CircuitBreaker
+    from messagekit.core.contracts.circuit_breaker import CircuitBreaker
 
     shared_breaker = CircuitBreaker(failure_threshold=3, reset_timeout=60.0)
     factory = create_circuit_breaker_factory(

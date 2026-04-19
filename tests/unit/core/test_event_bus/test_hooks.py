@@ -2,8 +2,8 @@
 
 import pytest
 
-from messaging.core.contracts import BaseEvent, DispatchHooks, DispatchSettings
-from messaging.core.contracts.event_bus import EventBus
+from messagekit.core.contracts import BaseEvent, DispatchHooks, DispatchSettings
+from messagekit.core.contracts.event_bus import EventBus
 from tests.unit.core.test_event_bus.test_fixtures import ExampleEvent
 
 

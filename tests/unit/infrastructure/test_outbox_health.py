@@ -6,7 +6,7 @@ from typing import Any, cast
 
 import pytest
 
-from messaging.infrastructure.health import EventingHealthCheck
+from messagekit.infrastructure.health import EventingHealthCheck
 from tests.unit.infrastructure.conftest import FakeBroker, FakeRepository
 
 

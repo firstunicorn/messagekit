@@ -14,8 +14,8 @@ class TestCircuitOpening:
         """Kill Kafka container, circuit opens after publish failures."""
         import asyncio
 
-        from messaging.core.contracts.circuit_breaker import CircuitOpenError
-        from messaging.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
+        from messagekit.core.contracts.circuit_breaker import CircuitOpenError
+        from messagekit.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
 
         broker, kafka_container = kafka_broker_with_circuit_breaker
         KafkaEventPublisher(broker)

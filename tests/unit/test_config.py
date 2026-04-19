@@ -1,6 +1,6 @@
 """Unit tests for application configuration settings."""
 
-from messaging.config import Settings
+from messagekit.config import Settings
 
 
 def test_rabbitmq_settings_defaults() -> None:

@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from messaging.core.contracts.circuit_breaker import CircuitBreaker, CircuitOpenError, CircuitState
+from messagekit.core.contracts.circuit_breaker import CircuitBreaker, CircuitOpenError, CircuitState
 
 
 class TestCircuitBreakerStateMachine:

@@ -40,7 +40,7 @@ Common issues and solutions for `python-eventing` integration.
 **Solutions:**
 1. Ensure `IProcessedMessageStore` is configured in consumer:
    ```python
-   from messaging.infrastructure import IdempotentConsumerBase
+   from messagekit.infrastructure import IdempotentConsumerBase
 
    class MyConsumer(IdempotentConsumerBase):
        def __init__(self, store: IProcessedMessageStore):
@@ -81,16 +81,16 @@ ModuleNotFoundError: No module named 'eventing'
 ```
 
 **Solution:**
-The import package is `messaging`, not `eventing`:
+The import package is `messagekit`, not `eventing`:
 ```python
 # Correct
-from messaging.core import BaseEvent
+from messagekit.core import BaseEvent
 
 # Incorrect
 from eventing.core import BaseEvent  # ❌
 ```
 
-The PyPI distribution name is `python-eventing`, but imports use `messaging`.
+The PyPI distribution name is `messagekit`, matching the import package name.
 
 ## Performance issues
 

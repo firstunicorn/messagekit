@@ -16,23 +16,23 @@
 ### Critical Infrastructure (85% minimum)
 
 **Core business logic & resilience:**
-- `src/messaging/core/contracts/circuit_breaker.py`
-- `src/messaging/core/contracts/bus/`
-- `src/messaging/core/contracts/dispatcher_setup.py`
+- `src/messagekit/core/contracts/circuit_breaker.py`
+- `src/messagekit/core/contracts/bus/`
+- `src/messagekit/core/contracts/dispatcher_setup.py`
 
 **Message processing & idempotency:**
-- `src/messaging/main/_initialization.py` (bridge handler with manual ack fixes)
-- `src/messaging/infrastructure/persistence/processed_message_store/`
-- `src/messaging/infrastructure/outbox/outbox_repository.py`
-- `src/messaging/infrastructure/outbox/outbox_crud/`
+- `src/messagekit/main/_initialization.py` (bridge handler with manual ack fixes)
+- `src/messagekit/infrastructure/persistence/processed_message_store/`
+- `src/messagekit/infrastructure/outbox/outbox_repository.py`
+- `src/messagekit/infrastructure/outbox/outbox_crud/`
 
 **Pub/sub bridge & publishers:**
-- `src/messaging/infrastructure/pubsub/bridge/`
-- `src/messaging/infrastructure/pubsub/kafka_publisher.py`
-- `src/messaging/infrastructure/pubsub/rabbit/publisher.py`
+- `src/messagekit/infrastructure/pubsub/bridge/`
+- `src/messagekit/infrastructure/pubsub/kafka_publisher.py`
+- `src/messagekit/infrastructure/pubsub/rabbit/publisher.py`
 
 **Resilience middleware:**
-- `src/messaging/infrastructure/resilience/` (circuit breaker, rate limiter)
+- `src/messagekit/infrastructure/resilience/` (circuit breaker, rate limiter)
 
 ### Standard Infrastructure (80% target)
 

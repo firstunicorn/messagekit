@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from messaging.presentation.router import outbox_health
+from messagekit.presentation.router import outbox_health
 from tests.unit.test_main_and_routing.test_fixtures import DummyChecker
 
 
@@ -15,7 +15,7 @@ async def test_outbox_health_returns_unavailable_without_checker() -> None:
     """Route should raise 503 when lifespan has not set a checker."""
     from fastapi import HTTPException
 
-    from messaging.presentation.dependencies import get_outbox_health_check
+    from messagekit.presentation.dependencies import get_outbox_health_check
 
     request = SimpleNamespace(app=SimpleNamespace(state=SimpleNamespace()))
 

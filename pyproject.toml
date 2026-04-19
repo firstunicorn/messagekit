@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "python-eventing"
+name = "messagekit"
 version = "0.1.0"
 description = "Universal event infrastructure with transactional outbox and Kafka integration"
 authors = ["firstunicorn"]
 readme = "README.md"
 homepage = "https://github.com/firstunicorn/python-eventing"
 repository = "https://github.com/firstunicorn/python-eventing"
-packages = [{include = "messaging", from = "src"}]
+packages = [{include = "messagekit", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -309,19 +309,19 @@ exclude_lines = [
 [tool.coverage.paths]
 # Critical infrastructure: 85% minimum (business logic, data integrity, resilience)
 critical_core = [
-    "src/messaging/core/contracts/circuit_breaker.py",
-    "src/messaging/core/contracts/bus/",
-    "src/messaging/core/contracts/dispatcher_setup.py",
+    "src/messagekit/core/contracts/circuit_breaker.py",
+    "src/messagekit/core/contracts/bus/",
+    "src/messagekit/core/contracts/dispatcher_setup.py",
 ]
 critical_infrastructure = [
-    "src/messaging/main/_initialization.py",
-    "src/messaging/infrastructure/persistence/processed_message_store/",
-    "src/messaging/infrastructure/outbox/outbox_repository.py",
-    "src/messaging/infrastructure/outbox/outbox_crud/",
-    "src/messaging/infrastructure/pubsub/bridge/",
-    "src/messaging/infrastructure/pubsub/kafka_publisher.py",
-    "src/messaging/infrastructure/pubsub/rabbit/publisher.py",
-    "src/messaging/infrastructure/resilience/",
+    "src/messagekit/main/_initialization.py",
+    "src/messagekit/infrastructure/persistence/processed_message_store/",
+    "src/messagekit/infrastructure/outbox/outbox_repository.py",
+    "src/messagekit/infrastructure/outbox/outbox_crud/",
+    "src/messagekit/infrastructure/pubsub/bridge/",
+    "src/messagekit/infrastructure/pubsub/kafka_publisher.py",
+    "src/messagekit/infrastructure/pubsub/rabbit/publisher.py",
+    "src/messagekit/infrastructure/resilience/",
 ]
 
 # NOTE: Per-path thresholds require pytest-cov>=5.0 with --cov-context flag
@@ -354,7 +354,7 @@ min_confidence = 80
 
 [tool.deptry]
 extend_exclude = ["docs"]
-known_first_party = ["messaging"]
+known_first_party = ["messagekit"]
 
 [tool.deptry.per_rule_ignores]
 # dev/CLI tools and runtime-only drivers not imported by src/ code
@@ -383,6 +383,6 @@ add-ignore = ["D100", "D104", "D107"]
 
 [tool.isort]
 profile = "black"
-known_first_party = ["messaging"]
+known_first_party = ["messagekit"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 line_length = 100

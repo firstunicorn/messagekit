@@ -6,9 +6,9 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from messaging.core.contracts import BaseEvent
-from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
-from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
+from messagekit.core.contracts import BaseEvent
+from messagekit.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
+from messagekit.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
 
 
 class ExampleEvent(BaseEvent):  # pylint: disable=too-many-ancestors

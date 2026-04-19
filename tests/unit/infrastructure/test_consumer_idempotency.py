@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from messaging.infrastructure.pubsub import IdempotentConsumerBase, IProcessedMessageStore
+from messagekit.infrastructure.pubsub import IdempotentConsumerBase, IProcessedMessageStore
 
 
 class FakeProcessedMessageStore(IProcessedMessageStore):

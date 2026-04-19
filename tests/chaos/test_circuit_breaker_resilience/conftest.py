@@ -24,8 +24,8 @@ async def kafka_broker_with_circuit_breaker(kafka_for_chaos):
     """Create Kafka broker with circuit breaker for chaos testing."""
     import asyncio
 
-    from messaging.config import Settings
-    from messaging.infrastructure.pubsub.broker_config import create_kafka_broker
+    from messagekit.config import Settings
+    from messagekit.infrastructure.pubsub.broker_config import create_kafka_broker
 
     settings = Settings(
         kafka_bootstrap_servers=kafka_for_chaos.get_bootstrap_server(),

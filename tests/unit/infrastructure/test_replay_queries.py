@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from messaging.infrastructure.outbox.outbox_replay_queries import OutboxReplayQueries
+from messagekit.infrastructure.outbox.outbox_replay_queries import OutboxReplayQueries
 
 
 class TestOutboxReplayQueries:

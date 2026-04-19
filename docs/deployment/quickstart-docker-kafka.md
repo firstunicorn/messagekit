@@ -22,7 +22,7 @@ Publish events directly to Kafka - no database, no CDC needed.
 **Code example**:
 ```python
 from faststream.kafka import KafkaBroker
-from messaging.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
+from messagekit.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
 
 # Create broker and publisher
 broker = KafkaBroker("localhost:9092")
@@ -48,7 +48,7 @@ Write events to database in same transaction as business logic, CDC publishes to
 ```python
 from sqlalchemy.ext.asyncio import AsyncSession
 from python_outbox_core import OutboxPublisherBase
-from messaging.infrastructure.outbox.repository import SqlAlchemyOutboxRepository
+from messagekit.infrastructure.outbox.repository import SqlAlchemyOutboxRepository
 
 # In your transaction
 async with session.begin():

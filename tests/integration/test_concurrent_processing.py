@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from messaging.infrastructure.persistence.processed_message_store.processed_message_store import (
+from messagekit.infrastructure.persistence.processed_message_store.processed_message_store import (
     SqlAlchemyProcessedMessageStore,
 )
 

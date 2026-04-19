@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from messaging.infrastructure.pubsub.rabbit.publisher import RabbitEventPublisher
+from messagekit.infrastructure.pubsub.rabbit.publisher import RabbitEventPublisher
 
 
 class TestRabbitEventPublisher:

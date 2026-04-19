@@ -46,8 +46,8 @@ Service C (Notification Service)
 # service-a/routes.py
 from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from messaging.infrastructure.outbox import SqlAlchemyOutboxRepository
-from messaging.core import BaseEvent
+from messagekit.infrastructure.outbox import SqlAlchemyOutboxRepository
+from messagekit.core import BaseEvent
 
 app = FastAPI()
 
@@ -118,7 +118,7 @@ CDC detects new row in `outbox_events` and publishes to **Kafka topic: `user.cre
 ```python
 # service-b/consumers.py
 from faststream.kafka import KafkaBroker
-from messaging.infrastructure.pubsub.consumer_base import SqlAlchemyProcessedMessageStore
+from messagekit.infrastructure.pubsub.consumer_base import SqlAlchemyProcessedMessageStore
 
 broker = KafkaBroker("kafka:9092")  # Docker service name
 
@@ -160,8 +160,8 @@ The bridge service (part of standard architecture) runs the Kafka → RabbitMQ f
 ```python
 # eventing-bridge/main.py (thin wrapper service)
 from fastapi import FastAPI
-from messaging.main._initialization.bridge_setup import initialize_production_bridge
-from messaging.config import settings
+from messagekit.main._initialization.bridge_setup import initialize_production_bridge
+from messagekit.config import settings
 
 app = FastAPI(title="Eventing Bridge")
 
@@ -182,7 +182,7 @@ async def startup():
 ```python
 # service-c/consumers.py
 from faststream.rabbit import RabbitBroker
-from messaging.infrastructure.pubsub.consumer_base import SqlAlchemyProcessedMessageStore
+from messagekit.infrastructure.pubsub.consumer_base import SqlAlchemyProcessedMessageStore
 
 rabbit_broker = RabbitBroker("amqp://guest:guest@rabbitmq:5672/")
 

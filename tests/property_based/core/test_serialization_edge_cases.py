@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from hypothesis import given
 from hypothesis import strategies as st
 
-from messaging.core.contracts import EventRegistry
+from messagekit.core.contracts import EventRegistry
 from tests.unit.infrastructure.conftest import ExampleEvent
 
 _SAFE_CHARS = st.characters(min_codepoint=32, max_codepoint=1200, exclude_categories=["Cs"])

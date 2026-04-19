@@ -43,7 +43,7 @@ async def handle_validations(event: dict):
 
 ### 2. Partition-based ordering
 
-**File:** `src/messaging/infrastructure/pubsub/kafka_publisher.py`
+**File:** `src/messagekit/infrastructure/pubsub/kafka_publisher.py`
 
 ```python
 # Kafka publisher uses partition key for ordering guarantees
@@ -77,7 +77,7 @@ await publisher.publish({
 
 ### 3. Consumer groups with offset tracking
 
-**File:** `src/messaging/config/kafka_settings.py`
+**File:** `src/messagekit/config/kafka_settings.py`
 
 ```python
 kafka_consumer_conf: dict[str, str] = Field(
@@ -156,7 +156,7 @@ graph LR
 
 ### 6. Autoflush control
 
-**File:** `src/messaging/infrastructure/pubsub/kafka_publisher.py`
+**File:** `src/messagekit/infrastructure/pubsub/kafka_publisher.py`
 
 ```python
 class KafkaEventPublisher(IEventPublisher):
@@ -184,7 +184,7 @@ class KafkaEventPublisher(IEventPublisher):
 
 ### 1. Topic-based routing with wildcards
 
-**File:** `src/messaging/infrastructure/pubsub/bridge/routing_key_builder.py`
+**File:** `src/messagekit/infrastructure/pubsub/bridge/routing_key_builder.py`
 
 ```python
 def build_routing_key(template: str, event: dict[str, str]) -> str:
@@ -223,7 +223,7 @@ async def handle_order_events(event: dict):
 
 ### 2. Exchange types (topic, fanout, direct, headers)
 
-**File:** `src/messaging/infrastructure/pubsub/rabbit/publisher.py`
+**File:** `src/messagekit/infrastructure/pubsub/rabbit/publisher.py`
 
 ```python
 # Explicit TOPIC exchange (supports wildcard routing)
@@ -304,7 +304,7 @@ async def high_priority_emails(msg: dict): pass
 
 ### 3. Publisher confirms
 
-**File:** `src/messaging/config/rabbitmq_settings.py`
+**File:** `src/messagekit/config/rabbitmq_settings.py`
 
 ```python
 rabbitmq_publisher_confirms: bool = Field(
@@ -339,7 +339,7 @@ await broker.publish(message, routing_key="tasks")
 
 ### 4. Dead letter exchanges (DLX)
 
-**File:** `src/messaging/infrastructure/pubsub/dlq_bookkeeper/__init__.py`
+**File:** `src/messagekit/infrastructure/pubsub/dlq_bookkeeper/__init__.py`
 
 ```python
 # @broker.subscriber("rabbitmq-dlq-queue")  # RabbitMQ DLQ queue
@@ -410,7 +410,7 @@ async def send_email(msg: dict):
 
 ### 6. Rate limiting per consumer
 
-**File:** `src/messaging/config/rabbitmq_settings.py`
+**File:** `src/messagekit/config/rabbitmq_settings.py`
 
 ```python
 rabbitmq_rate_limit: int = Field(default=500, description="Max messages per interval")
@@ -423,7 +423,7 @@ rabbitmq_rate_limiter_enabled: bool = Field(default=False)
 **Example:**
 ```python
 # Rate limiter middleware
-from messaging.infrastructure.pubsub.rabbit_prometheus_middleware import (
+from messagekit.infrastructure.pubsub.rabbit_prometheus_middleware import (
     create_rabbit_rate_limiter
 )
 
@@ -487,7 +487,7 @@ broker = RabbitBroker(middlewares=[rate_limiter])
 
 ### Kafka configuration
 
-**File:** `src/messaging/config/kafka_settings.py`
+**File:** `src/messagekit/config/kafka_settings.py`
 
 ```python
 from pydantic import BaseModel, Field
@@ -515,7 +515,7 @@ class KafkaSettings(BaseModel):
 
 ### RabbitMQ configuration
 
-**File:** `src/messaging/config/rabbitmq_settings.py`
+**File:** `src/messagekit/config/rabbitmq_settings.py`
 
 ```python
 from pydantic import BaseModel, Field

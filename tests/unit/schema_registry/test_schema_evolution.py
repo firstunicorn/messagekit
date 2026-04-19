@@ -2,7 +2,7 @@
 
 import pytest
 
-from messaging.core.contracts.schema_registry import SchemaEvolutionError, SchemaRegistry
+from messagekit.core.contracts.schema_registry import SchemaEvolutionError, SchemaRegistry
 
 
 class TestSchemaCompatibility:

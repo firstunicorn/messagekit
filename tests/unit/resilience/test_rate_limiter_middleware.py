@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 from faststream import StreamMessage
 
-from messaging.infrastructure.resilience.rate_limiter_middleware import RateLimiterMiddleware
+from messagekit.infrastructure.resilience.rate_limiter_middleware import RateLimiterMiddleware
 
 
 class TestRateLimiterMiddleware:

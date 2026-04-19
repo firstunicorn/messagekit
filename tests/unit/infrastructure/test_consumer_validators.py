@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from messaging.infrastructure.pubsub.consumer_base.consumer_validators import (
+from messagekit.infrastructure.pubsub.consumer_base.consumer_validators import (
     extract_event_id,
     validate_consumer_name,
 )

@@ -1,0 +1,68 @@
+"""Health check adapter for outbox and broker infrastructure.
+
+This module provides `EventingHealthCheck`, which aggregates health signals from
+the database, the Kafka broker, and the outbox worker's lag metrics.
+
+Native broker health is also exposed via FastStream's make_ping_asgi endpoint.
+
+See Also
+--------
+- messaging.infrastructure.health : The health check namespace
+- messaging.infrastructure.outbox.outbox_repository : Used to measure outbox lag
+"""
+
+from __future__ import annotations
+
+import logging
+from datetime import UTC, datetime
+from typing import Any
+
+from faststream.confluent import KafkaBroker
+
+from messagekit.infrastructure.health.checkers import check_database, check_outbox_lag
+from messagekit.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
+from python_outbox_core.health_check import HealthStatus, OutboxHealthCheck
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
+
+
+class EventingHealthCheck(OutboxHealthCheck):
+    """Aggregate database and outbox lag health signals.
+
+    Note: Broker health is exposed via FastStream's native make_ping_asgi endpoint.
+    """
+
+    def __init__(
+        self,
+        repository: SqlAlchemyOutboxRepository,
+        broker: KafkaBroker,
+        lag_threshold: int = 1000,
+        stale_after_seconds: int = 300,
+    ) -> None:
+        self._repository = repository
+        self._broker = broker
+        self._lag_threshold = lag_threshold
+        self._stale_after_seconds = stale_after_seconds
+
+    async def check_health(self) -> dict[str, Any]:
+        """Return a combined health payload for the outbox subsystem."""
+        checks = {
+            "database": await check_database(self._repository),
+            "outbox": await check_outbox_lag(
+                self._repository,
+                lag_threshold=self._lag_threshold,
+                stale_after_seconds=self._stale_after_seconds,
+            ),
+        }
+        statuses = {check["status"] for check in checks.values()}
+        status = (
+            HealthStatus.HEALTHY if statuses == {HealthStatus.HEALTHY} else HealthStatus.DEGRADED
+        )
+        if HealthStatus.UNHEALTHY in statuses:
+            status = HealthStatus.UNHEALTHY
+        return {
+            "status": status,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "checks": checks,
+        }

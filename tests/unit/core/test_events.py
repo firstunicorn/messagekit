@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from messaging.core.contracts import (
+from messagekit.core.contracts import (
     BaseEvent,
     EventEnvelopeFormatter,
     EventRegistry,

@@ -2,7 +2,7 @@
 
 import pytest
 
-from messaging.core.contracts import HandlerRegistration, build_event_bus
+from messagekit.core.contracts import HandlerRegistration, build_event_bus
 from tests.unit.core.test_event_bus.test_fixtures import ExampleEvent, RecordingHandler
 
 

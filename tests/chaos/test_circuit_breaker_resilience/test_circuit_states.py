@@ -16,7 +16,7 @@ class TestCircuitStateTransitions:
         """After timeout, circuit transitions to half-open state."""
         import asyncio
 
-        from messaging.core.contracts.circuit_breaker import CircuitState
+        from messagekit.core.contracts.circuit_breaker import CircuitState
 
         broker, kafka_container = kafka_broker_with_circuit_breaker
 
@@ -41,9 +41,9 @@ class TestCircuitStateTransitions:
         import asyncio
         from uuid import uuid4
 
-        from messaging.core.contracts.base_event import BaseEvent
-        from messaging.core.contracts.circuit_breaker import CircuitState
-        from messaging.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
+        from messagekit.core.contracts.base_event import BaseEvent
+        from messagekit.core.contracts.circuit_breaker import CircuitState
+        from messagekit.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
 
         broker, kafka_container = kafka_broker_with_circuit_breaker
         publisher = KafkaEventPublisher(broker)

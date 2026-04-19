@@ -4,7 +4,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from messaging.core.contracts.contract_validator import (
+from messagekit.core.contracts.contract_validator import (
     ContractViolationError,
     check_version_compatibility,
 )

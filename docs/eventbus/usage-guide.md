@@ -76,8 +76,8 @@ Kafka Publisher → External broker
 
 ```python
 from fastapi import Depends
-from messaging.core import BaseEvent
-from messaging.infrastructure import SqlAlchemyOutboxRepository
+from messagekit.core import BaseEvent
+from messagekit.infrastructure import SqlAlchemyOutboxRepository
 
 class UserCreated(BaseEvent):
     event_type: str = "user.created"
@@ -107,7 +107,7 @@ async def create_user(
 
 ```python
 from fastapi import Request
-from messaging.infrastructure import OutboxEventHandler
+from messagekit.infrastructure import OutboxEventHandler
 
 @router.post("/users")
 async def create_user(data: CreateUserRequest, request: Request):
@@ -146,7 +146,7 @@ async def create_user(data: CreateUserRequest, request: Request):
 **Solution**: EventBus dispatches to `OutboxEventHandler`, which persists events in the same database transaction as business data.
 
 ```python
-from messaging.infrastructure import OutboxEventHandler
+from messagekit.infrastructure import OutboxEventHandler
 
 # In service layer
 async def create_order(data, session):
@@ -202,7 +202,7 @@ await event_bus.dispatch(OrderPlaced(...))
 **Solution**: Use lifecycle hooks to log/trace all dispatches.
 
 ```python
-from messaging.core import DispatchHooks
+from messagekit.core import DispatchHooks
 
 def log_dispatch(trace):
     logger.info(
@@ -269,7 +269,7 @@ await service.create_user(data)  # EventBus disabled, no DB writes
 **Solution**: Implement custom `DispatchBackend`.
 
 ```python
-from messaging.core import DispatchBackend
+from messagekit.core import DispatchBackend
 import asyncio
 
 class ParallelDispatchBackend(DispatchBackend):

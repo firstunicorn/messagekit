@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from messaging.catalog.manager import EventCatalogManager
-from messaging.config.event_catalog_settings import EventCatalogSettings
+from messagekit.catalog.manager import EventCatalogManager
+from messagekit.config.event_catalog_settings import EventCatalogSettings
 
 
 class TestEventCatalogManagerInit:
@@ -42,7 +42,7 @@ class TestEventCatalogManagerEnsureCatalog:
         assert result is None
 
     @pytest.mark.asyncio
-    @patch("messaging.catalog.manager.subprocess.run")
+    @patch("messagekit.catalog.manager.subprocess.run")
     async def test_ensure_catalog_first_clone(
         self, mock_run: Mock, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:

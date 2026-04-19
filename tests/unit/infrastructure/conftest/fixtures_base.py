@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from messaging.core.contracts import BaseEvent
+from messagekit.core.contracts import BaseEvent
 from python_outbox_core import IOutboxEvent
 
 

@@ -6,11 +6,11 @@ import os
 from testcontainers.kafka import KafkaContainer
 from testcontainers.postgres import PostgresContainer
 
-from messaging.config import Settings
-from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
-from messaging.infrastructure.persistence.orm_models.orm_base import Base
-from messaging.infrastructure.persistence.session import create_session_factory
-from messaging.infrastructure.pubsub import KafkaEventPublisher, create_kafka_broker
+from messagekit.config import Settings
+from messagekit.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
+from messagekit.infrastructure.persistence.orm_models.orm_base import Base
+from messagekit.infrastructure.persistence.session import create_session_factory
+from messagekit.infrastructure.pubsub import KafkaEventPublisher, create_kafka_broker
 
 
 async def setup_containers_and_infrastructure(kafka: KafkaContainer, postgres: PostgresContainer):

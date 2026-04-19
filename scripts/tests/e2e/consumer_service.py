@@ -18,10 +18,10 @@ from sqlalchemy.ext.asyncio import (
 )
 from faststream.confluent import KafkaBroker
 
-from messaging.infrastructure.persistence.processed_message_store.processed_message_store import (
+from messagekit.infrastructure.persistence.processed_message_store.processed_message_store import (
     SqlAlchemyProcessedMessageStore,
 )
-from messaging.infrastructure.persistence.orm_models.processed_message_orm import ProcessedMessage
+from messagekit.infrastructure.persistence.orm_models.processed_message_orm import ProcessedMessage
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class ConsumerService:
         )
         
         # Create tables if needed
-        from messaging.infrastructure.persistence.models import Base
+        from messagekit.infrastructure.persistence.models import Base
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         

@@ -40,7 +40,7 @@ class TestExceptionNack:
 
         _, async_session_factory = sqlite_session_factory
 
-        from messaging.infrastructure.pubsub.bridge import consumer as bridge_module
+        from messagekit.infrastructure.pubsub.bridge import consumer as bridge_module
 
         original_handle = bridge_module.BridgeConsumer.handle_message
 
