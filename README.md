@@ -26,16 +26,16 @@ Package-first universal event infrastructure for microservices.
 ## Installation
 
 ```bash
-pip install python-eventing
+pip install messagekit
 # or
-poetry add python-eventing
+poetry add messagekit
 ```
 
-**Import package name:** `messaging` (distribution is `python-eventing`)
+**Import package name:** `messagekit` (distribution is `messagekit`)
 
 ```python
-from messaging.core import BaseEvent
-from messaging.infrastructure import SqlAlchemyOutboxRepository
+from messagekit.core import BaseEvent
+from messagekit.infrastructure import SqlAlchemyOutboxRepository
 ```
 
 **Requirements:**
@@ -47,15 +47,15 @@ Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 
 ## Comparison with alternatives
 
-`python-eventing` prioritizes **durable messaging** (transactional outbox + CDC) and **Kafka/RabbitMQ integration** over in-process event simplicity:
+`messagekit` prioritizes **durable messaging** (transactional outbox + CDC) and **Kafka/RabbitMQ integration** over in-process event simplicity:
 
-| Capability | `python-eventing` | [`pyventus`](https://github.com/mdapena/pyventus) | [`fastapi-events`](https://github.com/melvinkcx/fastapi-events) | Notes |
+| Capability | `messagekit` | [`pyventus`](https://github.com/mdapena/pyventus) | [`fastapi-events`](https://github.com/melvinkcx/fastapi-events) | Notes |
 | --- | --- | --- | --- | --- |
 | Transactional outbox | ✅✅✅ | ❌ | ❌ | Durable local DB plus outbox boundary is a core feature here |
 | Kafka data plane | ✅✅✅ | ❌ | ❌ | This package is built for Kafka-backed microservice messaging |
 | DLQ handling | ✅✅✅ | ❌ | ❌ | Leverages native RabbitMQ DLX and Kafka Connect DLQ SMT with database bookkeeping |
 | Health checks for eventing runtime | ✅✅✅ | ❌ | ❌ | Outbox health checks plus FastStream ASGI broker health endpoint |
-| Typed cross-service event contracts | ✅✅ | ✅ | ✅✅ | `python-eventing` and `fastapi-events` are stronger on explicit payload modeling |
+| Typed cross-service event contracts | ✅✅ | ✅ | ✅✅ | `messagekit` and `fastapi-events` are stronger on explicit payload modeling |
 | Decorator subscriber registration | ✅✅ | ✅✅✅ | ✅✅ | `EventBus.subscriber(...)` exists now; `pyventus` is still the most polished here |
 | In-process dispatch backend abstraction | ✅✅ | ✅✅✅ | ✅ | `DispatchBackend` exists here; `pyventus` offers a broader processor model |
 | Lifecycle hooks / callbacks | ✅✅ | ✅✅✅ | ✅ | `DispatchHooks` covers dispatch, success, failure, disabled, and debug |
@@ -70,7 +70,7 @@ Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 
 ## When to use this package
 
-**Use `python-eventing` if you need:**
+**Use `messagekit` if you need:**
 - Guaranteed event delivery via transactional outbox pattern
 - Kafka-based microservice messaging with CDC publishing
 - Dead letter queue handling with database bookkeeping
@@ -220,7 +220,7 @@ flowchart LR
 │                         YOUR SERVICE (FastAPI)                               │
 │                                                                              │
 │  ┌──────────────┐      ┌──────────────────────────────────────────────┐    │
-│  │   Routes     │──┬──▶│      python-eventing (SHARED CONTRACTS)       │    │
+│  │   Routes     │──┬──▶│      messagekit (SHARED CONTRACTS)       │    │
 │  └──────────────┘  │   │                                               │    │
 │                    │   │  • BaseEvent (Pydantic base)                  │    │
 │                    │   │  • IOutboxRepository (Protocol)               │    │
@@ -229,7 +229,7 @@ flowchart LR
 │                    │                       │ Uses contracts                 │
 │                    │                       ▼                                │
 │                    │   ┌──────────────────────────────────────────────┐    │
-│                    │   │         python-eventing (implementations)     │    │
+│                    │   │         messagekit (implementations)     │    │
 │                    │   │                                               │    │
 │                    │   │  ┌────────────────────────────────────────┐  │    │
 │                    │   │  │  WRITE SIDE (Primary)                  │  │    │
@@ -310,7 +310,7 @@ flowchart LR
                  │    │  DOWNSTREAM SERVICES                                 │
                  │    │                                                      │
                  │    │  ┌──────────────────────────────────────────────┐   │
-                 │    │  │  READ SIDE (python-eventing)                 │   │
+                 │    │  │  READ SIDE (messagekit)                 │   │
                  │    │  │                                              │   │
                  │    │  │  @broker.subscriber("user.created")          │   │
                  │    │  │  async def handle(event: UserCreated):       │   │
@@ -412,7 +412,7 @@ async def handle_user_created(event: UserCreatedEvent):  # ✅ Already a Pydanti
 - 🏥 **Native health checks**: `make_ping_asgi` endpoint for broker status
 - 🔀 **Unified API**: Same code works for Kafka, RabbitMQ, NATS, Redis Streams
 
-`python-eventing` uses FastStream for all Kafka/RabbitMQ interactions, giving you a clean, Pythonic API while handling all the low-level complexity.
+`messagekit` uses FastStream for all Kafka/RabbitMQ interactions, giving you a clean, Pythonic API while handling all the low-level complexity.
 
 ## Setup
 
@@ -446,8 +446,8 @@ Initialize the outbox repository and event bus at application startup:
 ```python
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import create_async_engine
-from messaging.infrastructure import SqlAlchemyOutboxRepository
-from messaging.core import build_event_bus
+from messagekit.infrastructure import SqlAlchemyOutboxRepository
+from messagekit.core import build_event_bus
 
 app = FastAPI()
 
@@ -473,8 +473,8 @@ The **core pattern** is the transactional outbox - persist events atomically wit
 
 ```python
 from fastapi import Depends
-from messaging.core import BaseEvent
-from messaging.infrastructure import SqlAlchemyOutboxRepository
+from messagekit.core import BaseEvent
+from messagekit.infrastructure import SqlAlchemyOutboxRepository
 
 # Define domain event
 class UserCreated(BaseEvent):
@@ -520,8 +520,8 @@ async def create_user(
 For **decoupled architectures** with multiple side effects per event, use the **EventBus** abstraction layer:
 
 ```python
-from messaging.core import BaseEvent
-from messaging.infrastructure import OutboxEventHandler
+from messagekit.core import BaseEvent
+from messagekit.infrastructure import OutboxEventHandler
 
 # Access EventBus (initialized at startup)
 event_bus = request.app.state.event_bus
@@ -551,16 +551,16 @@ await event_bus.dispatch(UserCreated(...))
 
 ## Distribution
 
-- PyPI distribution name: `python-eventing`
-- Python import package: `messaging`
+- PyPI distribution name: `messagekit`
+- Python import package: `messagekit`
 
 ```python
 # Install
-pip install python-eventing
+pip install messagekit
 
 # Import
-from messaging.core import BaseEvent
-from messaging.infrastructure import SqlAlchemyOutboxRepository
+from messagekit.core import BaseEvent
+from messagekit.infrastructure import SqlAlchemyOutboxRepository
 ```
 
 Services should consume the published package rather than source checkout. Kafka remains shared infrastructure with local producer/consumer clients per service.

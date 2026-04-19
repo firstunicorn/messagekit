@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from messaging.catalog.manager import EventCatalogManager
-from messaging.config.event_catalog_settings import EventCatalogSettings
-from messaging.core.contracts.base_event import BaseEvent
+from messagekit.catalog.manager import EventCatalogManager
+from messagekit.config.event_catalog_settings import EventCatalogSettings
+from messagekit.core.contracts.base_event import BaseEvent
 
 
 class SampleEvent(BaseEvent):
@@ -51,7 +51,7 @@ class TestCatalogValidationE2E:
         }
 
         # Mock the global catalog manager in base_event module
-        import messaging.core.contracts.base_event as base_event_module
+        import messagekit.core.contracts.base_event as base_event_module
 
         original_manager = base_event_module._catalog_manager
         base_event_module._catalog_manager = manager
@@ -80,7 +80,7 @@ class TestCatalogValidationE2E:
         # Empty catalog
         manager._catalog_data = {"events": {}, "services": {"services.order-service": {}}}
 
-        import messaging.core.contracts.base_event as base_event_module
+        import messagekit.core.contracts.base_event as base_event_module
 
         original_manager = base_event_module._catalog_manager
         base_event_module._catalog_manager = manager
@@ -95,7 +95,7 @@ class TestCatalogValidationE2E:
 
     def test_no_catalog_configured_format_only(self) -> None:
         """Without catalog, only format validation should run."""
-        import messaging.core.contracts.base_event as base_event_module
+        import messagekit.core.contracts.base_event as base_event_module
 
         original_manager = base_event_module._catalog_manager
         base_event_module._catalog_manager = None

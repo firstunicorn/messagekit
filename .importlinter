@@ -1,12 +1,12 @@
 [importlinter]
-root_package = messaging
+root_package = messagekit
 
 [importlinter:contract:layers]
 name = Clean Architecture layer independence
 type = layers
 layers =
-    messaging.presentation
-    messaging.infrastructure
-    messaging.application
-    messaging.domain
-    messaging.core
+    messagekit.presentation
+    messagekit.infrastructure
+    messagekit.application
+    messagekit.domain
+    messagekit.core

@@ -1,8 +1,8 @@
 # Python Eventing
 
 Package-first universal eventing infrastructure shared across
-microservices. Services should install the `python-eventing` distribution and
-import it as `messaging`. The package owns reusable event contracts, outbox
+microservices. Services should install the `messagekit` distribution and
+import it as `messagekit`. The package owns reusable event contracts, outbox
 persistence, Kafka publishing/consumption primitives, DLQ handling, health
 checks, and in-process dispatch ergonomics. It does not own
 gamification-specific reward rules or producer-specific business handlers.

@@ -6,7 +6,7 @@ import pytest
 from faststream import StreamMessage
 from prometheus_client import CollectorRegistry
 
-from messaging.infrastructure.pubsub.rabbit_prometheus_middleware import RabbitPrometheusMiddleware
+from messagekit.infrastructure.pubsub.rabbit_prometheus_middleware import RabbitPrometheusMiddleware
 
 
 class TestPrometheusExporter:

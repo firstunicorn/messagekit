@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from messaging.core.contracts import BaseEvent
+from messagekit.core.contracts import BaseEvent
 
 TEST_TOPIC = "gamification.xp.awarded"
 TEST_MESSAGE = {

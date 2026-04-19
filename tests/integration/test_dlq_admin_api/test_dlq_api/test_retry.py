@@ -17,7 +17,7 @@ class TestDLQRetry:
         """POST /dlq/{event_id}/retry resets failed status, re-enqueues."""
         from datetime import UTC, datetime
 
-        from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
+        from messagekit.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
 
         test_event_id = str(uuid4())
 
@@ -59,7 +59,7 @@ class TestDLQRetry:
         import structlog
         from sqlalchemy import select
 
-        from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
+        from messagekit.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
 
         logger = structlog.get_logger()
         test_event_id = str(uuid4())

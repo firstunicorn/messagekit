@@ -2,8 +2,8 @@
 
 import pytest
 
-from messaging.core.contracts import BaseEvent, SequentialDispatchBackend
-from messaging.core.contracts.event_bus import DispatchBackend, EventBus
+from messagekit.core.contracts import BaseEvent, SequentialDispatchBackend
+from messagekit.core.contracts.event_bus import DispatchBackend, EventBus
 from tests.unit.core.test_event_bus.test_fixtures import ExampleEvent, ReversingBackend
 
 

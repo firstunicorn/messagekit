@@ -7,10 +7,10 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from messaging.infrastructure.persistence.processed_message_store.duplicate_checker import (
+from messagekit.infrastructure.persistence.processed_message_store.duplicate_checker import (
     is_duplicate_claim,
 )
-from messaging.infrastructure.persistence.processed_message_store.processed_message_store import (
+from messagekit.infrastructure.persistence.processed_message_store.processed_message_store import (
     SqlAlchemyProcessedMessageStore,
 )
 

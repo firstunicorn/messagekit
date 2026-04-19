@@ -2,8 +2,8 @@
 
 from typing import Any
 
-from messaging.config import settings as app_settings
-from messaging.main._initialization import (
+from messagekit.config import settings as app_settings
+from messagekit.main._initialization import (
     initialize_brokers_and_publishers,
     register_bridge_handler,
 )
@@ -38,7 +38,7 @@ def initialize_production_bridge(
     kafka_topic: str = "events",
 ) -> tuple[Any, Any]:
     """Initialize production bridge components."""
-    from messaging.infrastructure.pubsub.bridge.config import BridgeConfig
+    from messagekit.infrastructure.pubsub.bridge.config import BridgeConfig
 
     broker, rabbit_broker, rabbit_publisher = initialize_brokers_and_publishers()
     bridge_config = BridgeConfig(

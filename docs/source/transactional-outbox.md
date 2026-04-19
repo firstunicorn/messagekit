@@ -19,7 +19,7 @@ The transactional outbox pattern ensures that domain events and business data ar
 
 ```python
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
+from messagekit.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
 from your_app.domain import YourBusinessRepository
 
 # Setup (once at app startup)

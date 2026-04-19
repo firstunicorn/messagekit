@@ -2,7 +2,7 @@
 
 import pytest
 
-from messaging.config.event_catalog_settings import EventCatalogSettings
+from messagekit.config.event_catalog_settings import EventCatalogSettings
 
 
 class TestEventCatalogSettingsDefaults:

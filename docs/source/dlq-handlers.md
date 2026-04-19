@@ -1,6 +1,6 @@
 # Dead letter queue (DLQ) handler guide
 
-**API Reference:** [Universal DLQ Handler](https://python-eventing.readthedocs.io/en/latest/autoapi/messaging/infrastructure/messaging/index.html) | [Kafka DLQ Handler](https://python-eventing.readthedocs.io/en/latest/autoapi/messaging/infrastructure/messaging/kafka/index.html)
+**API Reference:** [Universal DLQ Handler](https://python-eventing.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/index.html) | [Kafka DLQ Handler](https://python-eventing.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/kafka/index.html)
 
 ## Overview
 
@@ -20,7 +20,7 @@ The eventing service provides two DLQ handler implementations:
 
 **Import:**
 ```python
-from messaging.infrastructure.messaging.dead_letter_handler import DeadLetterHandler
+from messagekit.infrastructure.messaging.dead_letter_handler import DeadLetterHandler
 from python_outbox_core import IEventPublisher, IOutboxRepository
 
 handler = DeadLetterHandler(repository, publisher)  # Any IEventPublisher
@@ -42,8 +42,8 @@ handler = DeadLetterHandler(repository, publisher)  # Any IEventPublisher
 
 **Import:**
 ```python
-from messaging.infrastructure.messaging.kafka.kafka_dead_letter_handler import KafkaDeadLetterHandler
-from messaging.infrastructure.messaging.kafka_publisher import KafkaEventPublisher
+from messagekit.infrastructure.messaging.kafka.kafka_dead_letter_handler import KafkaDeadLetterHandler
+from messagekit.infrastructure.messaging.kafka_publisher import KafkaEventPublisher
 from python_outbox_core import IOutboxRepository
 
 handler = KafkaDeadLetterHandler(
@@ -59,7 +59,7 @@ handler = KafkaDeadLetterHandler(
 ### Universal handler (any broker)
 
 ```python
-from messaging.infrastructure.messaging.dead_letter_handler import DeadLetterHandler
+from messagekit.infrastructure.messaging.dead_letter_handler import DeadLetterHandler
 from python_outbox_core import IEventPublisher
 
 # Works with any broker implementation
@@ -83,8 +83,8 @@ await handler.handle(event, error_message="Connection timeout")
 ### Kafka handler (Kafka-specific)
 
 ```python
-from messaging.infrastructure.messaging.kafka.kafka_dead_letter_handler import KafkaDeadLetterHandler
-from messaging.infrastructure.messaging.kafka_publisher import KafkaEventPublisher
+from messagekit.infrastructure.messaging.kafka.kafka_dead_letter_handler import KafkaDeadLetterHandler
+from messagekit.infrastructure.messaging.kafka_publisher import KafkaEventPublisher
 
 # Kafka-specific with advanced features
 handler = KafkaDeadLetterHandler(
@@ -143,7 +143,7 @@ async def test_universal_dlq():
 
 ```python
 from unittest.mock import AsyncMock, Mock
-from messaging.infrastructure.messaging.kafka_publisher import KafkaEventPublisher
+from messagekit.infrastructure.messaging.kafka_publisher import KafkaEventPublisher
 
 async def test_kafka_dlq_headers():
     repository = Mock()

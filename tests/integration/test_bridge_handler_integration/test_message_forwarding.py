@@ -10,8 +10,8 @@ from aio_pika import ExchangeType
 from aio_pika.exceptions import QueueEmpty
 from confluent_kafka import Producer
 
-from messaging.config import settings as app_settings
-from messaging.main._initialization import (
+from messagekit.config import settings as app_settings
+from messagekit.main._initialization import (
     initialize_bridge_config,
     initialize_brokers_and_publishers,
     register_bridge_handler,

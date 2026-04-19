@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from messaging.core.contracts import BaseEvent
+from messagekit.core.contracts import BaseEvent
 
 
 class ValidEvent(BaseEvent):

@@ -16,14 +16,14 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
 )
 
-from messaging.core.contracts.bus.event_bus import EventBus
-from messaging.core.contracts import build_event_bus
-from messaging.infrastructure.outbox import (
+from messagekit.core.contracts.bus.event_bus import EventBus
+from messagekit.core.contracts import build_event_bus
+from messagekit.infrastructure.outbox import (
     SqlAlchemyOutboxRepository,
     OutboxEventHandler,
 )
-from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
-from messaging.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
+from messagekit.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
+from messagekit.infrastructure.pubsub.kafka_publisher import KafkaEventPublisher
 from faststream.confluent import KafkaBroker
 
 from shared_events import TestEvent
@@ -53,7 +53,7 @@ class ProducerService:
         )
         
         # Create tables if needed
-        from messaging.infrastructure.persistence.models import Base
+        from messagekit.infrastructure.persistence.models import Base
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         

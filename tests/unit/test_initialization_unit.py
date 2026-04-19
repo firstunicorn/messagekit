@@ -10,10 +10,10 @@ import pytest
 from faststream.confluent import KafkaBroker
 from faststream.rabbit import RabbitBroker
 
-from messaging.config import settings
-from messaging.infrastructure.pubsub.bridge.config import BridgeConfig
-from messaging.infrastructure.pubsub.rabbit.publisher import RabbitEventPublisher
-from messaging.main._initialization import (
+from messagekit.config import settings
+from messagekit.infrastructure.pubsub.bridge.config import BridgeConfig
+from messagekit.infrastructure.pubsub.rabbit.publisher import RabbitEventPublisher
+from messagekit.main._initialization import (
     attach_state_to_app,
     initialize_bridge_config,
     initialize_brokers_and_publishers,
@@ -24,8 +24,8 @@ from messaging.main._initialization import (
 class TestInitializeBrokersAndPublishers:
     """Unit tests for initialize_brokers_and_publishers function."""
 
-    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
-    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_kafka_broker")
     def test_returns_correct_types(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:
@@ -44,8 +44,8 @@ class TestInitializeBrokersAndPublishers:
         assert rabbit_broker is mock_rabbit_broker
         assert isinstance(rabbit_publisher, RabbitEventPublisher)
 
-    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
-    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_kafka_broker")
     def test_passes_settings_to_kafka_broker(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:
@@ -62,8 +62,8 @@ class TestInitializeBrokersAndPublishers:
         call_args = mock_create_kafka.call_args
         assert call_args[0][0] is settings  # First positional arg
 
-    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
-    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_kafka_broker")
     def test_passes_rate_limiter_settings(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:
@@ -87,8 +87,8 @@ class TestInitializeBrokersAndPublishers:
         assert "rate_limit_max_rate" in rabbit_kwargs
         assert "rate_limit_time_period" in rabbit_kwargs
 
-    @patch("messaging.main._initialization.broker_setup.create_rabbit_broker")
-    @patch("messaging.main._initialization.broker_setup.create_kafka_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_rabbit_broker")
+    @patch("messagekit.main._initialization.broker_setup.create_kafka_broker")
     def test_rabbit_publisher_uses_correct_exchange(
         self, mock_create_kafka, mock_create_rabbit
     ) -> None:

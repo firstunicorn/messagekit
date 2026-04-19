@@ -12,8 +12,8 @@ from typing import Any
 
 import pytest
 
-from messaging.infrastructure.outbox.outbox_queries import OutboxQueryOperations
-from messaging.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
+from messagekit.infrastructure.outbox.outbox_queries import OutboxQueryOperations
+from messagekit.infrastructure.persistence.orm_models.outbox_orm import OutboxEventRecord
 from tests.unit.infrastructure.conftest import ExampleEvent
 
 

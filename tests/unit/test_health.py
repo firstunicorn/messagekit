@@ -2,7 +2,7 @@
 
 from fastapi.testclient import TestClient
 
-from messaging.main import app
+from messagekit.main import app
 
 
 def test_health() -> None:

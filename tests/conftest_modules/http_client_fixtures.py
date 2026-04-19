@@ -14,7 +14,7 @@ async def async_client(
     sqlite_session_factory: tuple[AsyncEngine, async_sessionmaker[AsyncSession]],
 ) -> AsyncIterator[AsyncClient]:
     """Create async HTTP client for HTTP-only tests (no external brokers)."""
-    from messaging.main import create_app
+    from messagekit.main import create_app
 
     app = create_app()
 
@@ -35,7 +35,7 @@ async def async_client_with_kafka(
     monkeypatch: pytest.MonkeyPatch,
 ) -> AsyncIterator[AsyncClient]:
     """Create async HTTP client with real Kafka and RabbitMQ for integration tests."""
-    from messaging.main import create_app
+    from messagekit.main import create_app
 
     kafka_bootstrap = kafka_container.get_bootstrap_server()
     rabbitmq_url = (
@@ -44,7 +44,7 @@ async def async_client_with_kafka(
         f":{rabbitmq_container.get_exposed_port(rabbitmq_container.port)}//"
     )
 
-    from messaging.config import settings as app_settings
+    from messagekit.config import settings as app_settings
 
     monkeypatch.setattr(app_settings, "kafka_bootstrap_servers", kafka_bootstrap)
     monkeypatch.setattr(app_settings, "rabbitmq_url", rabbitmq_url)

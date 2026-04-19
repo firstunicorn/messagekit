@@ -5,8 +5,8 @@ from typing import Any
 import pytest
 from faststream import PublishCommand, PublishType, StreamMessage
 
-from messaging.core.contracts.circuit_breaker import CircuitOpenError, CircuitState
-from messaging.infrastructure.resilience.circuit_breaker_middleware import CircuitBreakerMiddleware
+from messagekit.core.contracts.circuit_breaker import CircuitOpenError, CircuitState
+from messagekit.infrastructure.resilience.circuit_breaker_middleware import CircuitBreakerMiddleware
 
 
 class TestCircuitBreakerMiddleware:

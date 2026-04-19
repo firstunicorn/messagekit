@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 from fastapi import FastAPI
 
-from messaging.main.lifespan import lifespan
+from messagekit.main.lifespan import lifespan
 
 
 @pytest.mark.asyncio
@@ -18,7 +18,7 @@ async def test_lifespan_initializes_and_cleans_up_infrastructure(
 
     # Patch settings to use in-memory database
     monkeypatch.setattr(
-        "messaging.config.settings",
+        "messagekit.config.settings",
         SimpleNamespace(
             database_url="sqlite:///:memory:",  # In-memory SQLite for testing
             rate_limiter_enabled=False,

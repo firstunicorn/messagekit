@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from messaging.infrastructure.pubsub.consumer_base.consumer_helpers import extract_event_id
+from messagekit.infrastructure.pubsub.consumer_base.consumer_helpers import extract_event_id
 
 
 class TestExtractEventId:

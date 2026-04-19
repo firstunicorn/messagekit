@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from messaging.infrastructure.persistence.orm_models.orm_base import Base
+from messagekit.infrastructure.persistence.orm_models.orm_base import Base
 
 
 @pytest.fixture

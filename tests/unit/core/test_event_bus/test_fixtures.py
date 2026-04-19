@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 
-from messaging.core.contracts import BaseEvent
-from messaging.core.contracts.event_bus import RegisteredHandler
+from messagekit.core.contracts import BaseEvent
+from messagekit.core.contracts.event_bus import RegisteredHandler
 from python_domain_events import IDomainEventHandler
 
 

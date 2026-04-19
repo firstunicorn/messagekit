@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import pytest
 
-from messaging.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
+from messagekit.infrastructure.outbox.outbox_repository import SqlAlchemyOutboxRepository
 
 
 class TestSqlAlchemyOutboxRepositoryDelegation:
@@ -22,8 +22,8 @@ class TestSqlAlchemyOutboxRepositoryDelegation:
     def repository(self, mock_session_factory: MagicMock) -> SqlAlchemyOutboxRepository:
         """Create repository with mocked dependencies."""
         with (
-            patch("messaging.infrastructure.outbox.outbox_repository.OutboxCrudOperations"),
-            patch("messaging.infrastructure.outbox.outbox_repository.OutboxQueryOperations"),
+            patch("messagekit.infrastructure.outbox.outbox_repository.OutboxCrudOperations"),
+            patch("messagekit.infrastructure.outbox.outbox_repository.OutboxQueryOperations"),
         ):
             return SqlAlchemyOutboxRepository(mock_session_factory)
 

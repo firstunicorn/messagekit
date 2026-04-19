@@ -11,7 +11,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from messaging.core.contracts import BaseEvent, EventRegistry, UnknownEventTypeError
+from messagekit.core.contracts import BaseEvent, EventRegistry, UnknownEventTypeError
 from tests.unit.infrastructure.conftest import ExampleEvent
 
 _VALID_KEYS = st.text(alphabet="abcdefghijklmnopqrstuvwxyz", min_size=1, max_size=10)

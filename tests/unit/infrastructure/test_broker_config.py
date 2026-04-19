@@ -2,9 +2,9 @@
 
 from prometheus_client import CollectorRegistry
 
-from messaging.config import Settings
-from messaging.infrastructure.pubsub.broker_config import create_kafka_broker
-from messaging.infrastructure.resilience.rate_limiter_middleware import RateLimiterMiddleware
+from messagekit.config import Settings
+from messagekit.infrastructure.pubsub.broker_config import create_kafka_broker
+from messagekit.infrastructure.resilience.rate_limiter_middleware import RateLimiterMiddleware
 
 
 class TestCreateKafkaBroker:
