@@ -2,10 +2,34 @@
 name = "messagekit"
 version = "0.1.0"
 description = "Universal event infrastructure with transactional outbox and Kafka integration"
-authors = ["firstunicorn"]
+authors = ["GridFlow Team <vialogue@proton.me>"]
+license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/firstunicorn/python-eventing"
-repository = "https://github.com/firstunicorn/python-eventing"
+homepage = "https://github.com/firstunicorn/messagekit"
+repository = "https://github.com/firstunicorn/messagekit"
+documentation = "https://messagekit.readthedocs.io/en/latest/"
+keywords = [
+    "eventing",
+    "outbox",
+    "kafka",
+    "rabbitmq",
+    "cdc",
+    "microservices",
+    "faststream",
+    "transactional-outbox",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Distributed Computing",
+    "Typing :: Typed",
+]
 packages = [{include = "messagekit", from = "src"}]
 
 [tool.poetry.dependencies]

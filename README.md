@@ -1,11 +1,11 @@
 # Eventing
 
 [Documentation Status](https://python-eventing.readthedocs.io/en/latest/?badge=latest)
-[Tests](https://github.com/firstunicorn/python-eventing/actions)
+[Tests](https://github.com/firstunicorn/messagekit/actions)
 [Python](https://www.python.org/downloads/)
 [License](LICENSE)
 [Code Style](https://github.com/astral-sh/ruff)
-[Validate Dependencies](https://github.com/firstunicorn/python-eventing/actions/workflows/validate-dependencies.yml)
+[Validate Dependencies](https://github.com/firstunicorn/messagekit/actions/workflows/validate-dependencies.yml)
 
 ## Table of contents
 
