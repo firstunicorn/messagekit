@@ -2,9 +2,9 @@
   <img src="docs/assets/logo.png" alt="messagekit logo" width="200">
 </p>
 
-<h1 align="center">messagekit</h1>
+<h1 align="center">messagekit — eventing solved</h1>
 
-<p align="center"><strong>Eventing solved.</strong> Kafka, outbox, DLQ, idempotency — behind a clean Pythonic interface.</p>
+<p align="center">Kafka, outbox, DLQ, idempotency — behind a clean Pythonic interface.</p>
 
 <p align="center">
   <a href="https://readthedocs.org/projects/messagekit/badge/?version=latest"><img src="https://readthedocs.org/projects/messagekit/badge/?version=latest" alt="Documentation Status"></a>
