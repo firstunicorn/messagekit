@@ -583,5 +583,3 @@ poetry run pytest
 - GitHub Actions runs all 192 tests on Linux (100% pass rate)
 - Workflows configured in `.github/workflows/`
 - See `.github/workflows/README.md` for details
-
-**For complete local test coverage on Windows:** See [Windows Testing with WSL2](docs/WINDOWS_TESTING_WITH_WSL2.md) (requires Docker Desktop WSL integration setup).
