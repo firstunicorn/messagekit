@@ -1,5 +1,5 @@
 """
-E2E test runner for python-eventing.
+E2E test runner for messagekit.
 
 Simulates real microservices architecture:
 - Producer service: Uses EventBus + Outbox pattern

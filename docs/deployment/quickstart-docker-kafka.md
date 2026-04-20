@@ -1,6 +1,6 @@
-# Quick Start: python-eventing with Docker Kafka
+# Quick Start: messagekit with Docker Kafka
 
-Get python-eventing running with Docker Kafka.
+Get messagekit running with Docker Kafka.
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ Get python-eventing running with Docker Kafka.
 
 ## Two Publishing Patterns
 
-python-eventing supports two approaches:
+messagekit supports two approaches:
 
 ### 1. Direct Publishing (simpler)
 Publish events directly to Kafka - no database, no CDC needed.
@@ -99,10 +99,10 @@ Wait for health checks (~30 seconds):
 docker-compose ps
 ```
 
-### 3. Install python-eventing
+### 3. Install messagekit
 
 ```bash
-pip install python-eventing faststream[kafka]
+pip install messagekit faststream[kafka]
 
 # For transactional outbox, also install:
 pip install sqlalchemy asyncpg
@@ -133,7 +133,7 @@ For transactional outbox pattern, configure Debezium CDC connector. This tells K
 | `database.password` | `postgres` | From docker-compose.yml `POSTGRES_PASSWORD` |
 | `database.dbname` | `eventing` | From docker-compose.yml `POSTGRES_DB` |
 | `database.server.name` | `myapp` | Arbitrary logical name (choose any) |
-| `table.include.list` | `public.outbox_events` | Table name from python-eventing ORM model |
+| `table.include.list` | `public.outbox_events` | Table name from messagekit ORM model |
 
 **Create the connector:**
 
@@ -219,4 +219,4 @@ curl http://localhost:8083/connectors/outbox-connector/status
 
 - [docker-compose.yml](../../docker-compose.yml) - Infrastructure definition
 - [.env.example](../../.env.example) - Configuration template
-- python-eventing docs: https://python-eventing.readthedocs.io/
+- messagekit docs: https://messagekit.readthedocs.io/

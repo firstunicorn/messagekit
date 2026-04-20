@@ -1,4 +1,4 @@
-# E2E tests for python-eventing
+# E2E tests for messagekit
 
 Real microservices architecture simulation testing the complete event flow.
 

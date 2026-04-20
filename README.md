@@ -1,6 +1,6 @@
 # Eventing
 
-[Documentation Status](https://python-eventing.readthedocs.io/en/latest/?badge=latest)
+[Documentation Status](https://messagekit.readthedocs.io/en/latest/?badge=latest)
 [Tests](https://github.com/firstunicorn/messagekit/actions)
 [Python](https://www.python.org/downloads/)
 [License](LICENSE)
@@ -21,7 +21,7 @@
 
 Package-first universal event infrastructure for microservices.
 
-📚 **[Full Documentation](https://python-eventing.readthedocs.io/en/latest/)** - Comprehensive guides and API reference
+📚 **[Full Documentation](https://messagekit.readthedocs.io/en/latest/)** - Comprehensive guides and API reference
 
 ## Installation
 
@@ -102,18 +102,18 @@ Support scale: `❌` none, `✅` basic, `✅✅` strong, `✅✅✅` first-class
 
 ## Documentation
 
-📖 **[Integration Guide](https://python-eventing.readthedocs.io/en/latest/integration-guide.html)** - Step-by-step integration instructions
+📖 **[Integration Guide](https://messagekit.readthedocs.io/en/latest/integration-guide.html)** - Step-by-step integration instructions
 
-🔍 **[API Reference](https://python-eventing.readthedocs.io/en/latest/autoapi/index.html)** - Complete API documentation
+🔍 **[API Reference](https://messagekit.readthedocs.io/en/latest/autoapi/index.html)** - Complete API documentation
 
-📋 **[Event Catalog](https://python-eventing.readthedocs.io/en/latest/event-catalog.html)** - Available event types and contracts
+📋 **[Event Catalog](https://messagekit.readthedocs.io/en/latest/event-catalog.html)** - Available event types and contracts
 
 ### Key topics
 
-- [Transactional Outbox Pattern](https://python-eventing.readthedocs.io/en/latest/transactional-outbox.html) - Guaranteed event delivery (PRIMARY)
-- [Cross-Service Communication](https://python-eventing.readthedocs.io/en/latest/cross-service-communication.html) - Database isolation, Kafka/RabbitMQ architecture, production deployment
-- [Idempotent Consumers](https://python-eventing.readthedocs.io/en/latest/consumer-transactions.html) - Duplicate message handling
-- [Health Checks](https://python-eventing.readthedocs.io/en/latest/autoapi/eventing/infrastructure/health/index.html) - Monitoring outbox and broker status
+- [Transactional Outbox Pattern](https://messagekit.readthedocs.io/en/latest/transactional-outbox.html) - Guaranteed event delivery (PRIMARY)
+- [Cross-Service Communication](https://messagekit.readthedocs.io/en/latest/cross-service-communication.html) - Database isolation, Kafka/RabbitMQ architecture, production deployment
+- [Idempotent Consumers](https://messagekit.readthedocs.io/en/latest/consumer-transactions.html) - Duplicate message handling
+- [Health Checks](https://messagekit.readthedocs.io/en/latest/autoapi/eventing/infrastructure/health/index.html) - Monitoring outbox and broker status
 
 **Architecture note**: This package handles the **write side** of the outbox pattern (persisting events transactionally with business data). **Publishing** is delegated to Kafka Connect with Debezium CDC, which captures outbox table changes and publishes to Kafka. The **bridge component** (part of standard architecture) forwards events from Kafka to RabbitMQ for services preferring AMQP. Dead letter handling leverages native broker mechanisms (RabbitMQ DLX, Kafka Connect DLQ SMT) with a minimal bookkeeping consumer to maintain database failed-event flags.
 
@@ -196,7 +196,7 @@ flowchart LR
 - **Publish Phase**: ✅ At-least-once (CDC retries on failure)
 - **Consume Phase**: ✅ Exactly-once (idempotency via processed message store in consumer's database)
 
-📖 **[Cross-Service Communication Guide](https://python-eventing.readthedocs.io/en/latest/cross-service-communication.html)** - Detailed explanation with production deployment patterns
+📖 **[Cross-Service Communication Guide](https://messagekit.readthedocs.io/en/latest/cross-service-communication.html)** - Detailed explanation with production deployment patterns
 
 ### Database isolation and event flow
 
@@ -465,7 +465,7 @@ async def startup():
     app.state.event_bus = event_bus
 ```
 
-**CDC Publishing:** Kafka Connect with Debezium CDC automatically detects outbox table changes and publishes to Kafka. See [`debezium-cdc-architecture.md`](https://python-eventing.readthedocs.io/en/latest/debezium-cdc-architecture.html) for configuration.
+**CDC Publishing:** Kafka Connect with Debezium CDC automatically detects outbox table changes and publishes to Kafka. See [`debezium-cdc-architecture.md`](https://messagekit.readthedocs.io/en/latest/debezium-cdc-architecture.html) for configuration.
 
 ## Quick Start: Transactional Outbox
 

@@ -1,6 +1,6 @@
 # Deployment Documentation
 
-Guide for running python-eventing with Kafka infrastructure.
+Guide for running messagekit with Kafka infrastructure.
 
 ## Quick start
 
@@ -8,7 +8,7 @@ Guide for running python-eventing with Kafka infrastructure.
 
 ## Two Publishing Patterns
 
-python-eventing supports two approaches:
+messagekit supports two approaches:
 
 1. **Direct Publishing** - Publish events directly to Kafka (simpler, Kafka only)
 2. **Transactional Outbox** - Write to DB, CDC publishes to Kafka (robust, requires PostgreSQL + Kafka Connect)

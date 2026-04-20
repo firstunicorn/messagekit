@@ -1,6 +1,6 @@
 version: '3.8'
 
-# Docker Compose for python-eventing + Kafka local development
+# Docker Compose for messagekit + Kafka local development
 
 networks:
   eventing-network:

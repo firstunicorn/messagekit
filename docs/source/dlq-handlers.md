@@ -1,6 +1,6 @@
 # Dead letter queue (DLQ) handler guide
 
-**API Reference:** [Universal DLQ Handler](https://python-eventing.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/index.html) | [Kafka DLQ Handler](https://python-eventing.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/kafka/index.html)
+**API Reference:** [Universal DLQ Handler](https://messagekit.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/index.html) | [Kafka DLQ Handler](https://messagekit.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/kafka/index.html)
 
 ## Overview
 

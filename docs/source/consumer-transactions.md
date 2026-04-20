@@ -1,8 +1,8 @@
 # Consumer transaction management guide
 
-**API Reference:** [IdempotentConsumerBase](https://python-eventing.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/kafka_consumer_base/index.html)
+**API Reference:** [IdempotentConsumerBase](https://messagekit.readthedocs.io/en/latest/autoapi/messagekit/infrastructure/messaging/kafka_consumer_base/index.html)
 
-**Integration Guide:** [Consume idempotently](https://python-eventing.readthedocs.io/en/latest/integration-guide.html#consume-idempotently)
+**Integration Guide:** [Consume idempotently](https://messagekit.readthedocs.io/en/latest/integration-guide.html#consume-idempotently)
 
 ## Overview
 

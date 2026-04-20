@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Common issues and solutions for `python-eventing` integration.
+Common issues and solutions for `messagekit` integration.
 
 ## Events stuck in outbox (not publishing)
 
@@ -119,4 +119,4 @@ The PyPI distribution name is `messagekit`, matching the import package name.
 - Review [Integration Guide](integration-guide.html) for setup verification
 - Check [Debezium CDC Architecture](debezium-cdc-architecture.html) for publishing details
 - See [Consumer Transactions](consumer-transactions.html) for idempotency patterns
-- [Open issue on GitHub](https://github.com/firstunicorn/python-eventing/issues)
+- [Open issue on GitHub](https://github.com/firstunicorn/messagekit/issues)

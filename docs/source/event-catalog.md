@@ -52,7 +52,7 @@ events and services against TOML registries:
 
 **Your organization's catalog repository structure:**
 
-This is the structure for your own centralized event catalog Git repository (not part of the `python-eventing` library):
+This is the structure for your own centralized event catalog Git repository (not part of the `messagekit` library):
 
 ```
 your-event-catalog/
@@ -80,7 +80,7 @@ events_published = ["orders.order.created"]
 
 ## Published domain event examples
 
-> **Note:** The events below are purely illustrative examples. The `python-eventing` library does *not* contain any hardcoded business payloads or domains (like gamification).
+> **Note:** The events below are purely illustrative examples. The `messagekit` library does *not* contain any hardcoded business payloads or domains (like gamification).
 
 The eventing service does not define producer-specific business payloads.
 Instead, it provides the reusable base contract that other services extend. The

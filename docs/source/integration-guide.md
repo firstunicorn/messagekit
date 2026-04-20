@@ -1,6 +1,6 @@
 # Integration guide
 
-Use the `python-eventing` package when a domain service needs both local
+Use the `messagekit` package when a domain service needs both local
 in-process dispatch and reliable cross-service publication.
 
 **For detailed cross-service architecture:** See {doc}`cross-service-communication` for database isolation patterns, Kafka/RabbitMQ architecture, and production deployment examples.
@@ -12,19 +12,18 @@ Add to your project's `pyproject.toml`:
 ```toml
 [tool.poetry.dependencies]
 python = "^3.12"
-python-eventing = "^0.1.0"
+messagekit = "^0.1.0"
 ```
 
 Or install directly:
 
 ```bash
-pip install python-eventing
+pip install messagekit
 # or
-poetry add python-eventing
+poetry add messagekit
 ```
 
-The published distribution name is `python-eventing`, while Python imports use
-`from messagekit ...` (not `eventing`).
+The distribution and import name is `messagekit`:
 
 ## Add a new event schema
 

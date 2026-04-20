@@ -1,6 +1,6 @@
 # Transactional outbox pattern - usage guide
 
-**Full documentation:** [Integration Guide - Publish through the outbox](https://python-eventing.readthedocs.io/en/latest/integration-guide.html#publish-through-the-outbox)
+**Full documentation:** [Integration Guide - Publish through the outbox](https://messagekit.readthedocs.io/en/latest/integration-guide.html#publish-through-the-outbox)
 
 ## Overview
 

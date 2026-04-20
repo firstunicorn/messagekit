@@ -2,7 +2,7 @@
 
 ## Overview
 
-`python-eventing` enables reliable event-driven communication between microservices following the **database-per-service** pattern. Each service maintains its own PostgreSQL database and communicates via shared Kafka infrastructure.
+`messagekit` enables reliable event-driven communication between microservices following the **database-per-service** pattern. Each service maintains its own PostgreSQL database and communicates via shared Kafka infrastructure.
 
 ## Architecture principle: Database isolation
 
@@ -369,7 +369,7 @@ All services on the **same Docker network** enable automatic service discovery v
 
 ### Configuration via environment variables
 
-Each service configures `python-eventing` via environment variables (read by Pydantic Settings):
+Each service configures `messagekit` via environment variables (read by Pydantic Settings):
 
 **Service A (Producer):**
 ```ini
@@ -548,7 +548,7 @@ async with session.begin():
 
 ## See also
 
-- {doc}`integration-guide` - How to integrate `python-eventing` in your service
+- {doc}`integration-guide` - How to integrate `messagekit` in your service
 - {doc}`transactional-outbox` - Outbox pattern details
 - {doc}`consumer-transactions` - Idempotent consumer pattern
 - {doc}`dlq-handlers` - Dead letter queue handling
