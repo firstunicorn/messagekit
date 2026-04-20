@@ -1,12 +1,36 @@
-# Eventing
+<p align="center">
+  <img src="docs/assets/logo.png" alt="messagekit logo" width="200">
+</p>
 
-[![Documentation Status](https://readthedocs.org/projects/messagekit/badge/?version=latest)](https://messagekit.readthedocs.io/en/latest/?badge=latest)
-[![Tests](https://github.com/firstunicorn/messagekit/actions/workflows/tests.yml/badge.svg)](https://github.com/firstunicorn/messagekit/actions/workflows/tests.yml)
-[![Linters](https://github.com/firstunicorn/messagekit/actions/workflows/linters.yml/badge.svg)](https://github.com/firstunicorn/messagekit/actions/workflows/linters.yml)
-[![PyPI](https://img.shields.io/pypi/v/messagekit)](https://pypi.org/project/messagekit/)
-[![Python](https://img.shields.io/pypi/pyversions/messagekit)](https://pypi.org/project/messagekit/)
-[![License](https://img.shields.io/github/license/firstunicorn/messagekit)](LICENSE)
-[![Code Style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+<h1 align="center">messagekit</h1>
+
+<p align="center"><strong>Eventing solved.</strong> Kafka, outbox, DLQ, idempotency — behind a clean Pythonic interface.</p>
+
+<p align="center">
+  <a href="https://readthedocs.org/projects/messagekit/badge/?version=latest"><img src="https://readthedocs.org/projects/messagekit/badge/?version=latest" alt="Documentation Status"></a>
+  <a href="https://github.com/firstunicorn/messagekit/actions/workflows/tests.yml"><img src="https://github.com/firstunicorn/messagekit/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/firstunicorn/messagekit/actions/workflows/linters.yml"><img src="https://github.com/firstunicorn/messagekit/actions/workflows/linters.yml/badge.svg" alt="Linters"></a>
+  <a href="https://pypi.org/project/messagekit/"><img src="https://img.shields.io/pypi/v/messagekit" alt="PyPI"></a>
+  <a href="https://pypi.org/project/messagekit/"><img src="https://img.shields.io/pypi/pyversions/messagekit" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/firstunicorn/messagekit" alt="License"></a>
+  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Code Style: Ruff"></a>
+</p>
+
+---
+
+Stop wrestling with Kafka producers, consumer groups, offset management,
+dead-letter queues, and transactional outbox plumbing. **messagekit** hides
+all that complexity under a simple, elegant Pythonic interface — so you
+ship domain events, not infrastructure code.
+
+```python
+# This is all it takes to publish a transactional event
+async with db_session.begin():
+    order = Order.create(cart)
+    db_session.add(order)
+    await outbox.publish(OrderCreated(order_id=order.id))
+# Kafka delivery, retries, DLQ — handled.
+```
 
 ## Table of contents
 
@@ -20,9 +44,7 @@
 - [Documentation](#documentation)
 - [Local development](#local-development)
 
-Package-first universal event infrastructure for microservices.
-
-📚 **[Full Documentation](https://messagekit.readthedocs.io/en/latest/)** - Comprehensive guides and API reference
+📚 **[Full documentation](https://messagekit.readthedocs.io/en/latest/)** — comprehensive guides and API reference
 
 ## Installation
 
