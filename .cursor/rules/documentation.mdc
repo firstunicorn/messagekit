@@ -62,7 +62,7 @@ Always clarify when something is:
 ```markdown
 **Your organization's catalog repository structure:**
 
-This is the structure for your own centralized event catalog Git repository (not part of the `python-eventing` library):
+This is the structure for your own centralized event catalog Git repository (not part of the `messagekit` library):
 ```
 
 ❌ **Ambiguous:**

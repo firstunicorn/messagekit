@@ -1,9 +1,9 @@
-# E2E Test Runner for python-eventing
+# E2E Test Runner for messagekit
 # Tests complete event flow: EventBus → Outbox → Kafka → Consumer
 
 Write-Host "=" -NoNewline -ForegroundColor Cyan
 Write-Host ("=" * 79) -ForegroundColor Cyan
-Write-Host "E2E Test Runner - python-eventing" -ForegroundColor Cyan
+Write-Host "E2E Test Runner - messagekit" -ForegroundColor Cyan
 Write-Host ("=" * 80) -ForegroundColor Cyan
 Write-Host ""
 
@@ -49,7 +49,7 @@ Push-Location $projectRoot
 try {
     # Run with Python
     python scripts/tests/e2e/run_e2e_test.py
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host ""
         Write-Host "✅ E2E test completed successfully" -ForegroundColor Green
