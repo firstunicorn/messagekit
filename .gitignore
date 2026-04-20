@@ -128,6 +128,10 @@ alembic/versions/__pycache__/
 *.zip
 *.whl
 
+# SpecStory history files containing leaked secrets (PyPI tokens from chat)
+.specstory/history/2026-04-18_23-07-52Z-(4)-readme-improvement-suggestions.md
+.specstory/history/2026-04-19_23-54-01Z-(5)-readme-improvement-suggestions.md
+
 # Temporary files
 /tmp/
 *.tmp
