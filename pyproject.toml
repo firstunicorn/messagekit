@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "messagekit"
-version = "0.1.0"
+version = "0.1.1"
 description = "Universal event infrastructure with transactional outbox and Kafka integration"
 authors = ["GridFlow Team <vialogue@proton.me>"]
 license = "MIT"
@@ -34,7 +34,7 @@ packages = [{include = "messagekit", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.135.2"
+fastapi = ">=0.135.2,<0.142"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
 pydantic = "^2.9.2"
 pydantic-settings = "^2.6.1"
