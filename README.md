@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="messagekit logo" width="200">
+  <img src="https://raw.githubusercontent.com/firstunicorn/messagekit/master/docs/assets/logo.png" alt="messagekit logo" width="200">
 </p>
 
 <h1 align="center">messagekit — eventing solved</h1>
