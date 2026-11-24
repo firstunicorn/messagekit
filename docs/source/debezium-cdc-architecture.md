@@ -125,7 +125,7 @@ Kafka Topic:
 ```json
 // Outbox table row:
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "event_id": "550e8400-e29b-41d4-a716-446655440000",
   "aggregate_id": "user-123",
   "event_type": "user.created",
   "payload": "{\"userId\": 123, \"email\": \"user@example.com\", \"name\": \"John Doe\"}"
@@ -269,7 +269,7 @@ curl http://kafka-connect:8083/connectors/outbox-connector/status
 ```sql
 -- Runs every 5 seconds (database load)
 SELECT * FROM outbox_events 
-WHERE published_at IS NULL 
+WHERE published = FALSE 
 ORDER BY created_at 
 LIMIT 100 
 FOR UPDATE SKIP LOCKED;

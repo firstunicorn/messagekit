@@ -131,4 +131,4 @@ The pattern ensures:
 1. **Atomicity**: Business data + event committed together
 2. **Durability**: Events stored in database before publishing
 3. **At-least-once delivery**: after a Kafka Connect crash the connector resumes from its last committed offset and can send an event twice. A consumer deduplicates with `SqlAlchemyProcessedMessageStore`.
-4. **Observability**: Repository tracks published/failed status
+4. **Observability**: Repository tracks published/failed status when the application calls `mark_published()` or `mark_failed()`. Debezium publishing calls neither.
