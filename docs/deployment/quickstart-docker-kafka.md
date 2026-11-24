@@ -134,6 +134,7 @@ For transactional outbox pattern, configure Debezium CDC connector. This tells K
 | `database.dbname` | `messagekit` | From docker-compose.yml `POSTGRES_DB` |
 | `topic.prefix` | `myapp` | Arbitrary logical name (choose any) |
 | `table.include.list` | `public.outbox_events` | Table name from messagekit ORM model |
+| `plugin.name` | `pgoutput` | Decoder built into PostgreSQL 10 and later. The Debezium default `decoderbufs` is a plug-in that the server must provide |
 
 **Create the connector:**
 
@@ -149,8 +150,14 @@ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json
     "database.dbname": "messagekit",
     "topic.prefix": "myapp",
     "table.include.list": "public.outbox_events",
+    "plugin.name": "pgoutput",
     "transforms": "outbox",
-    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter"
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.table.field.event.id": "event_id",
+    "transforms.outbox.table.field.event.key": "aggregate_id",
+    "transforms.outbox.table.field.event.payload": "payload",
+    "transforms.outbox.route.by.field": "event_type",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}"
   }
 }'
 ```

@@ -103,8 +103,14 @@ Kafka Connect monitors `postgres-a.outbox_events` using PostgreSQL Write-Ahead L
     "database.dbname": "users_db",
     "topic.prefix": "service-a",
     "table.include.list": "public.outbox_events",
+    "plugin.name": "pgoutput",
     "transforms": "outbox",
-    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter"
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.table.field.event.id": "event_id",
+    "transforms.outbox.table.field.event.key": "aggregate_id",
+    "transforms.outbox.table.field.event.payload": "payload",
+    "transforms.outbox.route.by.field": "event_type",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}"
   }
 }
 ```
