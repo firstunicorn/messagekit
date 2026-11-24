@@ -52,7 +52,6 @@ class ScheduledOutboxWorker:
     "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
     "transforms.outbox.table.field.event.id": "event_id",
     "transforms.outbox.table.field.event.key": "aggregate_id",
-    "transforms.outbox.table.field.event.type": "event_type",
     "transforms.outbox.table.field.event.payload": "payload",
     "transforms.outbox.route.by.field": "event_type",
     "transforms.outbox.route.topic.replacement": "${routedByValue}"
@@ -149,7 +148,6 @@ Headers:
 ```json
 "transforms.outbox.table.field.event.id": "event_id",        // → Kafka header
 "transforms.outbox.table.field.event.key": "aggregate_id",   // → Kafka key (partition routing)
-"transforms.outbox.table.field.event.type": "event_type",    // → Kafka topic name
 "transforms.outbox.table.field.event.payload": "payload",    // → Kafka value (unwrapped)
 "transforms.outbox.route.by.field": "event_type",            // Route to topic by this field
 "transforms.outbox.route.topic.replacement": "${routedByValue}" // Topic name = that value (default: outbox.event.<value>)
@@ -214,7 +212,7 @@ curl -X POST http://kafka-connect:8083/connectors \
       "database.user": "postgres",
       "database.password": "postgres",
       "database.dbname": "your_db",
-      "database.server.name": "your_service",
+      "topic.prefix": "your_service",
       "table.include.list": "public.outbox_events",
       "plugin.name": "pgoutput",
       "slot.name": "debezium_outbox",
@@ -223,7 +221,6 @@ curl -X POST http://kafka-connect:8083/connectors \
       "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
       "transforms.outbox.table.field.event.id": "event_id",
       "transforms.outbox.table.field.event.key": "aggregate_id",
-      "transforms.outbox.table.field.event.type": "event_type",
       "transforms.outbox.table.field.event.payload": "payload",
       "transforms.outbox.route.by.field": "event_type",
       "transforms.outbox.route.topic.replacement": "${routedByValue}"

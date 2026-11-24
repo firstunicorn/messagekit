@@ -132,7 +132,7 @@ For transactional outbox pattern, configure Debezium CDC connector. This tells K
 | `database.user` | `postgres` | From docker-compose.yml `POSTGRES_USER` |
 | `database.password` | `postgres` | From docker-compose.yml `POSTGRES_PASSWORD` |
 | `database.dbname` | `messagekit` | From docker-compose.yml `POSTGRES_DB` |
-| `database.server.name` | `myapp` | Arbitrary logical name (choose any) |
+| `topic.prefix` | `myapp` | Arbitrary logical name (choose any) |
 | `table.include.list` | `public.outbox_events` | Table name from messagekit ORM model |
 
 **Create the connector:**
@@ -147,7 +147,7 @@ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json
     "database.user": "postgres",
     "database.password": "postgres",
     "database.dbname": "messagekit",
-    "database.server.name": "myapp",
+    "topic.prefix": "myapp",
     "table.include.list": "public.outbox_events",
     "transforms": "outbox",
     "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter"
