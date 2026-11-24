@@ -7,7 +7,7 @@
 **Debezium** is a distributed platform for change data capture (CDC). It monitors your PostgreSQL database's **Write-Ahead Log (WAL)** and streams changes to Kafka in real-time.
 
 **For the outbox pattern:**
-- Application writes events to `outbox_event_record` table (transactional)
+- Application writes events to `outbox_events` table (transactional)
 - Debezium detects the insert via PostgreSQL WAL
 - EventRouter SMT transforms the outbox row into a proper Kafka message
 - Event published to Kafka within milliseconds (<100ms)
@@ -45,16 +45,17 @@ class ScheduledOutboxWorker:
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "database.hostname": "postgres",
     "database.dbname": "your_db",
-    "table.include.list": "public.outbox_event_record",
+    "table.include.list": "public.outbox_events",
     "plugin.name": "pgoutput",
     
     "transforms": "outbox",
     "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
-    "transforms.outbox.table.field.event.id": "id",
+    "transforms.outbox.table.field.event.id": "event_id",
     "transforms.outbox.table.field.event.key": "aggregate_id",
     "transforms.outbox.table.field.event.type": "event_type",
     "transforms.outbox.table.field.event.payload": "payload",
-    "transforms.outbox.route.by.field": "event_type"
+    "transforms.outbox.route.by.field": "event_type",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}"
   }
 }
 ```
@@ -146,11 +147,12 @@ Headers:
 ### Configuration mapping
 
 ```json
-"transforms.outbox.table.field.event.id": "id",              // → Kafka header
+"transforms.outbox.table.field.event.id": "event_id",        // → Kafka header
 "transforms.outbox.table.field.event.key": "aggregate_id",   // → Kafka key (partition routing)
 "transforms.outbox.table.field.event.type": "event_type",    // → Kafka topic name
 "transforms.outbox.table.field.event.payload": "payload",    // → Kafka value (unwrapped)
-"transforms.outbox.route.by.field": "event_type"             // Route to topic by this field
+"transforms.outbox.route.by.field": "event_type",            // Route to topic by this field
+"transforms.outbox.route.topic.replacement": "${routedByValue}" // Topic name = that value (default: outbox.event.<value>)
 ```
 
 ---
@@ -213,17 +215,18 @@ curl -X POST http://kafka-connect:8083/connectors \
       "database.password": "postgres",
       "database.dbname": "your_db",
       "database.server.name": "your_service",
-      "table.include.list": "public.outbox_event_record",
+      "table.include.list": "public.outbox_events",
       "plugin.name": "pgoutput",
       "slot.name": "debezium_outbox",
       "publication.name": "debezium_publication",
       "transforms": "outbox",
       "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
-      "transforms.outbox.table.field.event.id": "id",
+      "transforms.outbox.table.field.event.id": "event_id",
       "transforms.outbox.table.field.event.key": "aggregate_id",
       "transforms.outbox.table.field.event.type": "event_type",
       "transforms.outbox.table.field.event.payload": "payload",
-      "transforms.outbox.route.by.field": "event_type"
+      "transforms.outbox.route.by.field": "event_type",
+      "transforms.outbox.route.topic.replacement": "${routedByValue}"
     }
   }'
 ```
@@ -268,7 +271,7 @@ curl http://kafka-connect:8083/connectors/outbox-connector/status
 **Polling worker:**
 ```sql
 -- Runs every 5 seconds (database load)
-SELECT * FROM outbox_event_record 
+SELECT * FROM outbox_events 
 WHERE published_at IS NULL 
 ORDER BY created_at 
 LIMIT 100 
@@ -335,7 +338,7 @@ SELECT * FROM pg_publication_tables;
    ```sql
    -- Verify outbox table exists
    SELECT * FROM information_schema.tables 
-   WHERE table_name = 'outbox_event_record';
+   WHERE table_name = 'outbox_events';
    ```
 
 3. **Permission denied:**
@@ -361,7 +364,7 @@ SELECT * FROM pg_publication_tables;
 
 3. **Verify outbox table has events:**
    ```sql
-   SELECT * FROM outbox_event_record ORDER BY created_at DESC LIMIT 10;
+   SELECT * FROM outbox_events ORDER BY created_at DESC LIMIT 10;
    ```
 
 4. **Check Kafka Connect logs:**

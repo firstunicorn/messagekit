@@ -122,18 +122,13 @@ async def test_outbox_standalone_mode():
     assert await outbox_repo.count_unpublished() == 1
 ```
 
-## Background worker
+## Publishing
 
-The outbox worker polls for unpublished events and publishes them:
-
-```python
-# Worker runs independently, publishes events from outbox
-worker = ScheduledOutboxWorker(repository, publisher, config)
-await worker.schedule_publishing()  # Polls every N seconds
-```
+The package stores the event and does not publish it: it has no polling worker. Debezium reads the insert from the PostgreSQL WAL, and Kafka Connect writes one message to the topic named by `event_type` ([Debezium CDC architecture](debezium-cdc-architecture.md)).
+`SqlAlchemyOutboxRepository.mark_published()` and `mark_failed()` serve an application that publishes the rows itself.
 
 The pattern ensures:
 1. **Atomicity**: Business data + event committed together
 2. **Durability**: Events stored in database before publishing
-3. **Retry**: Worker retries failed publishes with exponential backoff
+3. **At-least-once delivery**: after a Kafka Connect crash the connector resumes from its last committed offset and can send an event twice. A consumer deduplicates with `SqlAlchemyProcessedMessageStore`.
 4. **Observability**: Repository tracks published/failed status

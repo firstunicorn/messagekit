@@ -1,7 +1,7 @@
 """DLQ bookkeeper consumer for database failure tracking.
 
 This module provides a lightweight FastStream consumer that listens to native
-DLQ topics (RabbitMQ DLX and Kafka Connect DLQ) and updates the `outbox_event_record`
+DLQ topics (RabbitMQ DLX and Kafka Connect DLQ) and updates the `outbox_events`
 table to mark events as failed, maintaining operational visibility.
 
 Native broker DLQ mechanisms (RabbitMQ DLX, Kafka Connect DLQ SMT) preserve
