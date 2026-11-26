@@ -25,7 +25,7 @@ async def update_db_flag_for_dlq_event(
     headers: dict[str, Any],
     session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
-    """Update outbox_event_record.failed flag for a DLQ event.
+    """Update outbox_events.failed flag for a DLQ event.
 
     This function is called by FastStream subscribers listening to DLQ topics.
     It extracts the event_id and error reason, then marks the corresponding
